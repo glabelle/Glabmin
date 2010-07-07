@@ -7,6 +7,10 @@ query() {
 	mysql -N -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASS -e"use $DATABASE_NAME ; $@"
 }
 
+error() {
+	echo  -e '\E[41m'"\033[1mERROR\033[0m"": $@" ; exit 1
+}
+
 usage(){
 [ -z "$PARAMETERS" ] && PARAMETERS="\n"
 [ -n "$OPTIONS" ] && OPTIONS=$OPTIONS"\n"
