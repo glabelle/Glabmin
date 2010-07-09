@@ -67,8 +67,9 @@ do
         command=${command//\[CLIENT\]/$opt_name_val}
         command=`echo $command | sed "s#SUBCOMMAND#$sub_command#g"`
         bash -c "$command" 2>&1
-done && exit 0
+done 
 
+exit 0
 
 #otherwise, something went wrong.
 echo "ERROR : something unexpected appened" && exit 1
