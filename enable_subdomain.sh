@@ -37,18 +37,18 @@ done
 
 #argument vs system ckeckings :
 DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
-[ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER start
+[ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER start >/dev/null
 [ -n "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && error "can't start MySQL"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -n "`query "select name from domains where name='$opt_domain_val' and status='disabled';"`" ] && error "Domain $opt_domain_val is disabled"
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subomain $opt_domain_val is unknown for domain $opt_domain_val"
-[ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val' and status='active';"`" ] && error "Subdomain $opt_subdomain_val is already active"
+[ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val' and status='active';"`" ] && warning "Subdomain $opt_subdomain_val is already active"
 
-#3) on active le sous-domaine ..
+#3) on désactive le sous-domaine ..
 APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"
-( [ -n "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] || [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] ) && [ -n "$APACHE_STATUS" ] && $DAEMON_HTTP_SERVER stop
+( [ -n "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] || [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] ) && [ -n "$APACHE_STATUS" ] && $DAEMON_HTTP_SERVER stop >/dev/null
 query "update subdomains set status='active' where name='$opt_subdomain_val' and domain='$opt_domain_val';"
-[ -n "$APACHE_STATUS" ] && [ -z "`$DAEMON_HTTP_SERVER status`" ] && $DAEMON_HTTP_SERVER start
-[ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && [ -z "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER stop
+[ -n "$APACHE_STATUS" ] && [ -z "`$DAEMON_HTTP_SERVER status`" ] && $DAEMON_HTTP_SERVER start >/dev/null
+[ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && [ -z "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER stop >/dev/null
 
 
