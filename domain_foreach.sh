@@ -37,6 +37,7 @@ done
 [ -z "$opt_name" ] && echo "Client name is missing" && exit 1
 [ -z "$opt_command" ] && echo "Command name is missing" && exit 1
 
+TEMPFILE="/tmp/domain_foreach.tmp"
 
 #argument vs system ckeckings :
 [ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
@@ -45,22 +46,24 @@ done
 
 for DOMAIN in `query "select name from domains where client='$opt_name_val';"`
 do
+		#echo "debug : foreach loop : $DOMAIN : $opt_command_val"
         command=$opt_command_val
         command=`echo $command | sed 's#>$##g'`
         command=`echo $command | sed 's#^<##g'`
         sub_command=`echo $command | grep -o '"<.*>"'`
         sub_command=`echo $sub_command | sed 's#>"$##g'`
         sub_command=`echo $sub_command | sed 's#^"<##g'`
-	sub_command=`echo $sub_command | sed 's#&#\\\\&#g'`
-        echo $sub_command | sed -e 's:":\\\\":g'>tmp
-        sub_command=`cat tmp`
-        rm tmp
+		sub_command=`echo $sub_command | sed 's#&#\\\\&#g'`
+        echo $sub_command | sed -e 's:":\\\\":g'>$TEMPFILE
+        sub_command=`cat $TEMPFILE`
+        rm $TEMPFILE
         sub_command='"<'$sub_command'>"'
         command=`echo $command | sed 's#"<.*>"#SUBCOMMAND#g'`
         command=${command//\[DOMAIN\]/$DOMAIN}
         command=${command//\[CLIENT\]/$opt_name_val}
         command=`echo $command | sed "s#SUBCOMMAND#$sub_command#g"`
-        bash -c "$command" 2>&1
+        #echo "debug : foreach loop : $DOMAIN : $command"
+        /bin/bash -c "$command" 2>&1
 done
 exit 0
 

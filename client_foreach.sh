@@ -12,7 +12,6 @@ PARAMETERS="[CLIENT]	nom du client courant
  [ADDRESS]	adresse du client courant
  [EMAIL]	adresse email du client courant"
 
-
 PARAMS=`getopt -o c:,h,v -l command:,help,version -- "$@" `
 [ $? != 0 ] && exit 1
 eval set -- "$PARAMS"
@@ -35,6 +34,8 @@ done
 #if no domain or no password, then display help and exit
 [ -z "$opt_command" ] && echo "Command name is missing" && exit 1
 
+TEMPFILE="/tmp/client_foreach.tmp"
+
 #looping clients, replacing parameter & executing command ..
 for CLIENT in `query "select name from clients;"`
 do
@@ -47,9 +48,9 @@ do
         sub_command=`echo $sub_command | sed 's#>"$##g'`
         sub_command=`echo $sub_command | sed 's#^"<##g'`
         sub_command=`echo $sub_command | sed 's#&#\\\\&#g'`
-	echo $sub_command | sed -e 's:":\\\\":g'>tmp
-        sub_command=`cat tmp`
-        rm tmp
+		echo $sub_command | sed -e 's:":\\\\":g'>$TEMPFILE
+        sub_command=`cat $TEMPFILE`
+        rm $TEMPFILE
         sub_command='"<'$sub_command'>"'
         command=`echo $command | sed 's#"<.*>"#SUBCOMMAND#g'`
         command=${command//\[CLIENT\]/$CLIENT}

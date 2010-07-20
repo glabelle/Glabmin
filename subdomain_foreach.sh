@@ -46,6 +46,8 @@ done
 [ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
 [ -z "`query "select name from domains where name='$opt_domain_val' and client='$opt_name_val';"`" ] && echo "ERROR : Domain $opt_domain_val is unknown" && exit 1
 
+TEMPFILE="/tmp/subdomain_foreach.tmp"
+
 #montages .. pas grand chose pour le moment ..
 
 for SUBDOMAIN in `query "select name from subdomains where domain='$opt_domain_val';"`
@@ -57,9 +59,9 @@ do
         sub_command=`echo $sub_command | sed 's#>"$##g'`
         sub_command=`echo $sub_command | sed 's#^"<##g'`
 	sub_command=`echo $sub_command | sed 's#&#\\\\&#g'`
-        echo $sub_command | sed -e 's:":\\\\":g'>tmp
-        sub_command=`cat tmp`
-        rm tmp
+        echo $sub_command | sed -e 's:":\\\\":g'>$TEMPFILE
+        sub_command=`cat $TEMPFILE`
+        rm $TEMPFILE
         sub_command='"<'$sub_command'>"'
         command=`echo $command | sed 's#"<.*>"#SUBCOMMAND#g'`
         command=${command//\[DOMAIN\]/$opt_domain_val}

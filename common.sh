@@ -4,7 +4,7 @@
 source glabmin.conf
 
 query() {
-	mysql -N -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASS -e"use $DATABASE_NAME ; $@"
+	mysql --silent -N -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASS -e"use $DATABASE_NAME ; $@"
 }
 
 error() {
