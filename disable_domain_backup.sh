@@ -53,6 +53,9 @@ mdelete $filename
 quit
 EOF
 
+#ligne au danger potentiel !!!
+rm `ls "/var/archives/$filename"` 
+
 sed -i "s:$DOMAIN_POOL_ROOT/$opt_domain_val ::g" $BACKUP_CONFIG_FILE && exit 0
 
 #otherwise, something went wrong.
