@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#inclusions des procédures communes et de la configuration.
+#inclusions des procédures communes et de la configuration
 source glabmin.conf
 source common.sh
 
