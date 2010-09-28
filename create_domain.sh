@@ -51,7 +51,8 @@ done
 [ -z `echo "$opt_size_val<=$DOMAIN_MAXIMUM_SIZE"|bc|egrep 1` ] && echo "ERROR : Domain size $opt_size_val too big (must be < $DOMAIN_MAXIMUM_SIZE)" && exit 1
 
 #registering new domain
-query "insert into domains (name,password,client,size) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val);"
+#MATHIEU : attention, le pool est en dur !
+query "insert into domains (name,password,client,size,pool) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val,'glabelle1');"
 
 #validation :
 opt_password_val=`query "select password from domains where name='$opt_domain_val';"`

@@ -101,7 +101,7 @@ chown -R $opt_domain_val:$opt_domain_val $opt_logs_val &&
 chown root:root $opt_logs_val/.lock &&
 chattr +i $opt_logs_val/.lock &&
 
-$DAMEON_HTTP_SERVER reload>/dev/null && exit 0
+$DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #otherwise, something went wrong.
 echo "ERROR : something unexpected appened" && exit 1
