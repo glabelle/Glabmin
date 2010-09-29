@@ -44,7 +44,7 @@ opt_domain_val=`query "select domain from subdomains where name='$opt_subdomain_
 
 # Mathieu : On ne passe pas a la suite tant que la base n'a pas été correctement vidée.
 # Autrement dit, il faut que tous les enregistrements avec des clés étrangère subdomaine aient été virées.
-query "delete from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';" #provoque une erreur si ce n'est pas possible
+query "delete from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';" || exit 1 #provoque une erreur si ce n'est pas possible
 
 #creating appropriate system side
 chattr -i $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&

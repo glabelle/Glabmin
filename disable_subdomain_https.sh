@@ -46,7 +46,8 @@ opt_subdomain_val=`query "select subdomain from https_subdomains where domain='$
 opt_root_val=`query "select documentroot from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"` #ATTENTION : cas de destruction de la racine serveur si "/" en param !!!!!!!!!!!!
 
 #Deleting https service record
-query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'" &&
+query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  || exit 1
+
 $DAMEON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
 rm -fr $opt_root_val && exit 0 #Fichue ligne !!!! Il faut vérifier ce parametre avant d'éxécuter. Je sais pas trop comment .... Si on a / en bdd au moment de 

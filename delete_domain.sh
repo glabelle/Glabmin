@@ -41,7 +41,7 @@ opt_domain_val=`query "select name from domains where name='$opt_domain_val';"`
 
 # Mathieu : On ne passe pas a la suite tant que la base n'a pas été correctement vidée.
 # Autrement dit, il faut que tous les enregistrements avec des clés étrangère domaine aient été virées.
-query "delete from domains where name='$opt_domain_val';" #provoque une erreur si ce n'est pas possible
+query "delete from domains where name='$opt_domain_val';" || exit 1 #provoque une erreur si ce n'est pas possible
 
 #creating appropriate system side
 cat /etc/hosts|while read line; do echo ${line/$opt_domain_val /} >> ./hosts.temp; done && cp ./hosts.temp /etc/hosts && rm ./hosts.temp &&
