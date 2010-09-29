@@ -41,8 +41,8 @@ DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
 [ -n "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && error "can't start MySQL"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subomain $opt_domain_val is unknown for domain $opt_domain_val"
-[ -n "`query "select name from domains where name='$opt_domain_val' and status='disabled';"`" ] && warning "Domain $opt_domain_val is disabled"
-[ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val' and status='disabled';"`" ] && warning "Subdomain $opt_subdomail_val is already disabled"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0;"`" ] && warning "Domain $opt_domain_val is unmounted"
+#[ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val' and status='disabled';"`" ] && warning "Subdomain $opt_subdomail_val is already disabled"
 
 #3) on désactive le sous-domaine ..
 APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"

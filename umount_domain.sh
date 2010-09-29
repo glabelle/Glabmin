@@ -37,7 +37,7 @@ DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
 [ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER start
 [ -n "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && error "can't start MySQL"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and status='disabled';"`" ] && warning "Domain $opt_domain_val is disabled"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0;"`" ] && warning "Domain $opt_domain_val is disabled"
 
 
 #démontages .. pas grand chose pour le moment ..
@@ -68,10 +68,10 @@ APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"
 
 if [ -n "`query "select name from subdomains where domain='$opt_domain_val';"`" ]
 then
-	$SCRIPTSDIR/subdomain_foreach.sh -d $opt_domain_val -n "`query "select client from domains where name='$opt_domain_val'"`" -c "< $SCRIPTSDIR/disable_subdomain.sh -d $opt_domain_val -s [SUBDOMAIN] >"
+	$SCRIPTSDIR/subdomain_foreach.sh -d $opt_domain_val -n "`query "select client from domains where name='$opt_domain_val'"`" -c "< $SCRIPTSDIR/umount_subdomain.sh -d $opt_domain_val -s [SUBDOMAIN] >"
 fi
 [ -n "`mount|grep clients-$opt_domain_val`" ] && umount /dev$DOMAIN_POOL_ROOT/$opt_domain_val
-query "update domains set status='disabled' where name='$opt_domain_val';"
+query "update domains set mounted=0 where name='$opt_domain_val';"
 
 
 [ -n "$APACHE_STATUS" ] && [ -z "`$DAEMON_HTTP_SERVER status`" ] && $DAEMON_HTTP_SERVER start >/dev/null
