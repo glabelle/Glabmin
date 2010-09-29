@@ -45,7 +45,7 @@ done
 #[ "`query "select count(*) from database_directorys where domain='$opt_domain_val';"`" -ge "`query "select nbdirectory from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : cannot add another directory for domain $opt_domain_val" && exit 1
 
 #registering new http service
-query "delete from http_domains_restricted where domain='$opt_domain_val' and directory='$opt_directory_val';"
+query "delete from http_domains_restricted where domain='$opt_domain_val' and directory='$opt_directory_val';" || exit 1
 
 #upgrading system level
 $DAMEON_HTTP_SERVER reload>/dev/null && exit 0

@@ -54,7 +54,7 @@ done
 [ "`query "select count(*) from database_users where domain='$opt_domain_val';"`" -ge "`query "select nbuser from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : cannot add another user for domain $opt_domain_val" && exit 1
 
 #registering new http service
-query "insert into database_users (domain,name,password,email) values ('$opt_domain_val','$opt_user_val','$opt_password_val','$opt_email_val');"
+query "insert into database_users (domain,name,password,email) values ('$opt_domain_val','$opt_user_val','$opt_password_val','$opt_email_val');" || exit 1
 
 #verif
 opt_user_val=`query "select name from database_users where domain='$opt_domain_val' and name='$opt_user_val';"`

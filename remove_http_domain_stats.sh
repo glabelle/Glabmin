@@ -52,7 +52,7 @@ opt_engine_val=`query "select engine from http_domains_stats where domain='$opt_
 opt_root_val=`query "select documentroot from http_domains_stats where domain='$opt_domain_val' and engine='$opt_engine_val';"`
 
 #deleting http stats service
-query "delete from http_domains_stats where engine='$opt_engine_val' and domain='$opt_domain_val';"
+query "delete from http_domains_stats where engine='$opt_engine_val' and domain='$opt_domain_val';" || exit 1
 
 #upgrading system level
 $DAMEON_HTTP_SERVER reload>/dev/null

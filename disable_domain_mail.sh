@@ -45,7 +45,7 @@ opt_root_val=`query "select mailroot from mail_domains where domain='$opt_domain
 opt_email_val=`query "select pooladmin from mail_domains where domain='$opt_domain_val';"`
 
 #deleting entry in glabelle db
-query "delete from mail_domains where domain='$opt_domain_val';"
+query "delete from mail_domains where domain='$opt_domain_val';"  || exit 1
 
 #upgrading system level
 [ -n "`lsof $opt_root_val`" ] && echo "ERROR : mail pool $opt_root_val cannot be unmounted" && echo "processes : `lsof -t $opt_root_val`" && exit 1

@@ -52,7 +52,7 @@ done
 
 #registering new domain
 #MATHIEU : attention, le pool est en dur !
-query "insert into domains (name,password,client,size,pool) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val,'glabelle1');"
+query "insert into domains (name,password,client,size,pool) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val,'glabelle1');" || exit 1
 
 #validation :
 opt_password_val=`query "select password from domains where name='$opt_domain_val';"`

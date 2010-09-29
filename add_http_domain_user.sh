@@ -49,7 +49,7 @@ done
 #[ "`query "select count(*) from database_users where domain='$opt_domain_val';"`" -ge "`query "select nbuser from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : cannot add another user for domain $opt_domain_val" && exit 1
 
 #registering new http service
-query "insert into http_domains_users (domain,user,password) values ('$opt_domain_val','$opt_user_val','$opt_password_val');"
+query "insert into http_domains_users (domain,user,password) values ('$opt_domain_val','$opt_user_val','$opt_password_val');" || exit 1
 
 #upgrading system level
 #nothing to be done ...

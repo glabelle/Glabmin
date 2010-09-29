@@ -46,7 +46,7 @@ done
 [ -z "$opt_password" ] && opt_password_val=`query "select password from domains where name='$opt_domain_val';"`
 
 
-query "insert into subdomains (name,domain,password) values ('$opt_subdomain_val','$opt_domain_val','$opt_password_val');"
+query "insert into subdomains (name,domain,password) values ('$opt_subdomain_val','$opt_domain_val','$opt_password_val');" || exit 1
 #validation :
 opt_domain_val=`query "select name from domains where name='$opt_domain_val';"`
 opt_password_val=`query "select password from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`

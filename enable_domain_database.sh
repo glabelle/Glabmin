@@ -61,7 +61,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val" ] && echo "ERROR : A file or directory \"$opt_dbroot_val\" exists in domain $opt_domain_val" && exit 1
 
 #registering new http service
-query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');"
+query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');" || exit 1
 
 #verif
 opt_domain_val=`query "select domain from database_domains where domain='$opt_domain_val'"`

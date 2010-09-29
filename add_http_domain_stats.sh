@@ -53,7 +53,7 @@ done
 
 
 #registering new http stats service
-query "insert into http_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');"
+query "insert into http_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');" || exit 1
 
 #verif
 opt_domain_val=`query "select domain from http_domains_stats where domain='$opt_domain_val' and engine='$opt_engine_val';"`

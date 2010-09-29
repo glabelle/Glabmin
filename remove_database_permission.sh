@@ -47,7 +47,7 @@ opt_base_val=`query "select base from database_permissions where base='$opt_base
 opt_dbroot_val=`query "select user from database_permissions where base='$opt_base_val' and user='$opt_user_val';"`
 
 #deleting entry ..
-query "delete from database_permissions where base='$opt_base_val' and user='$opt_user_val';"
+query "delete from database_permissions where base='$opt_base_val' and user='$opt_user_val';" || exit 1
 
 #upgrading system level
 mysql -N -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e "use mysql ; revoke all privileges on $opt_base_val.* from '$opt_user_val'@'localhost' ;" && exit 0

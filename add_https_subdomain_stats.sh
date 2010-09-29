@@ -56,7 +56,7 @@ done
 
 
 #registering new https stats service
-query "insert into https_subdomains_stats (domain,subdomain,engine,documentroot) values ('$opt_domain_val','$opt_subdomain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val');"
+query "insert into https_subdomains_stats (domain,subdomain,engine,documentroot) values ('$opt_domain_val','$opt_subdomain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val');" || exit 1
 
 
 #verif

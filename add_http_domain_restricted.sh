@@ -49,7 +49,7 @@ done
 #[ "`query "select count(*) from database_directorys where domain='$opt_domain_val';"`" -ge "`query "select nbdirectory from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : cannot add another directory for domain $opt_domain_val" && exit 1
 
 #registering new http service
-query "insert into http_domains_restricted (domain,directory) values ('$opt_domain_val','$opt_directory_val');"
+query "insert into http_domains_restricted (domain,directory) values ('$opt_domain_val','$opt_directory_val');" || exit 1
 
 #upgrading system level
 #nothing to be done ..

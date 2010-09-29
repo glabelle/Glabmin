@@ -38,7 +38,7 @@ done
 [ -n "`query "select domain from backup_domains where domain='$opt_domain_val';"`" ] && error "Service backup for domain $opt_domain_val already present"
 
 #registering new http service
-query "insert into backup_domains (domain) values ('$opt_domain_val');"
+query "insert into backup_domains (domain) values ('$opt_domain_val');" || exit 1
 
 #verif (pas de vérif a priori ..)
 

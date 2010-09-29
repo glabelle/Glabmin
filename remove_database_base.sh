@@ -47,7 +47,7 @@ opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_do
 
 
 #deleting user entry
-query "delete from database_bases where name='$opt_base_val';"
+query "delete from database_bases where name='$opt_base_val';" || exit 1
 
 #upgrading system level
 $DAEMON_DATABASE_SERVER stop &&

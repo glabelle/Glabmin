@@ -42,7 +42,7 @@ opt_root_val=`query "select documentroot from http_domains where domain='$opt_do
 opt_logs_val=`query "select logfiledir from http_domains where domain='$opt_domain_val'"`
 
 #Deleting http service record
-query "delete from http_domains where domain='$opt_domain_val'" &&
+query "delete from http_domains where domain='$opt_domain_val'" || exit 1 &&
 $DAMEON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock &&
 rm -fr $opt_root_val && 

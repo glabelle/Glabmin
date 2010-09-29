@@ -42,7 +42,7 @@ done
 [ -n "`query "select base from database_permissions where base='$opt_base_val' and user='$opt_user_val';"`" ] && echo "ERROR : User $opt_user_val is already allowed for database $opt_base_val" && exit 0
 
 #registering new http service
-query "insert into database_permissions (base,user) values ('$opt_base_val','$opt_user_val');"
+query "insert into database_permissions (base,user) values ('$opt_base_val','$opt_user_val');" || exit 1
 
 #verif
 opt_base_val=`query "select base from database_permissions where base='$opt_base_val' and user='$opt_user_val';"`

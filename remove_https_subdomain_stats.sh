@@ -56,7 +56,7 @@ opt_engine_val=`query "select engine from https_subdomains_stats where domain='$
 opt_root_val=`query "select documentroot from https_subdomains_stats where domain='$opt_domain_val' and subdomain='$opt_subdomain_val' and engine='$opt_engine_val';"`
 
 #deleting https stats service
-query "delete from https_subdomains_stats where engine='$opt_engine_val' and domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"
+query "delete from https_subdomains_stats where engine='$opt_engine_val' and domain='$opt_domain_val' and subdomain='$opt_subdomain_val';" || exit 1
 
 #upgrading system level
 $DAMEON_HTTP_SERVER reload>/dev/null
