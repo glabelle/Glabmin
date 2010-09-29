@@ -8,7 +8,7 @@ source common.sh
 DESCRIPTION="ajouter les statistiques d'un service http"
 USAGE="(-d|--domain) nom_du_domaine [options]"
 OPTIONS="
- (-r|--root) racine_stats // racine de l'arborescence statistiques dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $SSTAT_DEFAULT_HTTP_ROOT)
+ (-r|--root) racine_stats // racine de l'arborescence statistiques dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $STAT_DEFAULT_HTTP_ROOT)
  (-g|--engine) engine_name // moteur de rendu statistique (defaut : $STAT_DEFAULT_ENGINE)
  "
 
@@ -44,7 +44,7 @@ done
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
-[ -z "$opt_root" ] && opt_root_val=$SSTAT_DEFAULT_HTTP_ROOT
+[ -z "$opt_root" ] && opt_root_val=$STAT_DEFAULT_HTTP_ROOT
 [ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid stats directory name $opt_root_val" && exit 1
 [ -z "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service HTTP for domain $opt_domail_val is disabled" && exit 1
 [ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && echo "ERROR : Stat engine $opt_engine_val is unknown" && exit 1
@@ -84,7 +84,7 @@ webalizer )
 * )	;;
 esac
 
-$DAMEON_HTTP_SERVER reload>/dev/null && exit 0
+$DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #otherwise, something went wrong.
 echo "ERROR : something unexpected appened" && exit 1
