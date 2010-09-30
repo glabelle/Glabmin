@@ -34,8 +34,8 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no domain or no password, then display help and exit
-[ -z "$opt_name" ] && echo "Client name is missing" && exit 1
-[ -z "$opt_command" ] && echo "Command name is missing" && exit 1
+[ -z "$opt_name" ] && error "Client name is missing"
+[ -z "$opt_command" ] && error "Command name is missing"
 
 TEMPFILE="/tmp/domain_foreach.tmp"
 
