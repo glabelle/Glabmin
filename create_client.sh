@@ -37,17 +37,17 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_name" ] && echo "ERROR : Client name is missing" && exit 1
-[ -z "$opt_email" ] && echo "ERROR : Client email is missing" && exit 1
+[ -z "$opt_name" ] && error "Client name is missing"
+[ -z "$opt_email" ] && error "Client email is missing"
 
 #argument vs system ckeckings :
-[ -z `echo $opt_name_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid client name : $opt_name_val" && exit 1
-[ -n "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client name already registered" && exit 1
-[ -z `echo $opt_email_val|egrep '\w+([_-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && echo "ERROR : Invalid email : $opt_email_val" && exit 1
+[ -z `echo $opt_name_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid client name : $opt_name_val"
+[ -n "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client name already registered"
+[ -z `echo $opt_email_val|egrep '\w+([_-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "Invalid email : $opt_email_val"
 
 #registering new client
 query "insert into clients (name,address,email) values('$opt_name_val','$opt_address_val','$opt_email_val')" && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??

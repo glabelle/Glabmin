@@ -49,27 +49,27 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -z "$opt_charset" ] && opt_charset_val=$HTTP_DEFAULT_CHARSET
-[ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && echo "ERROR : Charset $opt_charset_val is unknown" && exit 1
+[ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && error "Charset $opt_charset_val is unknown"
 [ -z "$opt_user" ] && opt_user_val=$opt_domain_val
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTP_DEFAULT_ROOT
 [ -z "$opt_logs" ] && opt_logs_val=$HTTP_DEFAULT_LOGDIR
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid http root name $opt_root_val" && exit 1
-[ -z `echo $opt_logs_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid logs directory name $opt_logs_val" && exit 1
+[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid http root name $opt_root_val"
+[ -z `echo $opt_logs_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid logs directory name $opt_logs_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && echo "ERROR : admin email $opt_email_val is invalid" && exit 1
-[ -n "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service http for domain $opt_domain_val already present" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && echo "ERROR : A file or directory \"$opt_root_val\" exists in domain $opt_domain_val" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val" ] && echo "ERROR : A file or directory \"$opt_logs_val\" exists in domain $opt_domain_val" && exit 1
+[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
+[ -n "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] && error "Service http for domain $opt_domain_val already present"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val" ] && error "A file or directory \"$opt_logs_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val');" || exit 1
+query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val');" error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from http_domains where domain='$opt_domain_val'"`
@@ -104,6 +104,6 @@ chattr +i $opt_logs_val/.lock &&
 $DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

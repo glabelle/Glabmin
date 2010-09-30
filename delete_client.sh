@@ -31,10 +31,10 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_name" ] && echo "ERROR : Client name is missing" && exit 1
+[ -z "$opt_name" ] && error "Client name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
+[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
 
 #validation :
 opt_name_val=`query "select name from clients where name='$opt_name_val';"`
@@ -47,4 +47,4 @@ query "delete from clients where name='$opt_name_val';" && exit 0
 #rien a faire ...
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"

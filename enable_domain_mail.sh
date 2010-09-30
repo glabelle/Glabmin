@@ -39,21 +39,21 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -z "$opt_root" ] && opt_root_val=$MAIL_DEFAULT_ROOT
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid mail root name $opt_root_val" && exit 1
+[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid mail root name $opt_root_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && echo "ERROR : pool admin email $opt_email_val is invalid" && exit 1
+[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "pool admin email $opt_email_val is invalid"
 [ -z "$opt_password" ] && opt_password_val=`query "select password from domains where name='$opt_domain_val';"`
-[ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service mail for domain $opt_domain_val already present" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && echo "ERROR : A file or directory \"$opt_root_val\" exists in domain $opt_domain_val" && exit 1
+[ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && error "Service mail for domain $opt_domain_val already present"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into mail_domains (domain,pooladmin,mailroot,password) values ('$opt_domain_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_password_val');" || exit 1
+query "insert into mail_domains (domain,pooladmin,mailroot,password) values ('$opt_domain_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_password_val');" error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from mail_domains where domain='$opt_domain_val'"`
@@ -73,5 +73,5 @@ chattr +i $opt_root_val/.lock &&
 mount --bind $opt_root_val/ $MAIL_SYSTEM_POOL/$opt_domain_val && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??

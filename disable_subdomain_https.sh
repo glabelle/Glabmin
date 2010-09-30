@@ -32,13 +32,13 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_subdomain" ] && echo "ERROR : Subdomain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_subdomain" ] && error "Subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && echo "ERROR : Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val" && exit 1
-[ -z "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && echo "ERROR : Service https for subdomain $opt_subdomain_val of $opt_domain_val already disabled" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
+[ -z "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service https for subdomain $opt_subdomain_val of $opt_domain_val already disabled"
 
 #verif
 opt_domain_val=`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`
@@ -46,14 +46,14 @@ opt_subdomain_val=`query "select subdomain from https_subdomains where domain='$
 opt_root_val=`query "select documentroot from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"` #ATTENTION : cas de destruction de la racine serveur si "/" en param !!!!!!!!!!!!
 
 #Deleting https service record
-query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  || exit 1
+query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  error "Client integrity at risk; aborting"
 
-$DAMEON_HTTP_SERVER reload>/dev/null &&
+$DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
 rm -fr $opt_root_val && exit 0 #Fichue ligne !!!! Il faut vérifier ce parametre avant d'éxécuter. Je sais pas trop comment .... Si on a / en bdd au moment de 
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 
 

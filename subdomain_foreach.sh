@@ -43,8 +43,8 @@ done
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
-[ -z "`query "select name from domains where name='$opt_domain_val' and client='$opt_name_val';"`" ] && echo "ERROR : Domain $opt_domain_val is unknown" && exit 1
+[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val' and client='$opt_name_val';"`" ] && error "Domain $opt_domain_val is unknown"
 
 TEMPFILE="/tmp/subdomain_foreach.tmp"
 
@@ -74,5 +74,5 @@ done
 exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 

@@ -40,7 +40,7 @@ done
 TEMPFILE="/tmp/domain_foreach.tmp"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
+[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
 
 #montages .. pas grand chose pour le moment ..
 

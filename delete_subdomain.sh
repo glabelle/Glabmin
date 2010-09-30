@@ -32,11 +32,11 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no domain, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_subdomain" ] && echo "ERROR : subdomain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_subdomain" ] && error "subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && echo "ERROR : Subdomain $opt_domail_val is unknown for domain $opt_domain_val" && exit 1
+[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_domail_val is unknown for domain $opt_domain_val"
 
 #validation :
 opt_subdomain_val=`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`
@@ -44,11 +44,11 @@ opt_domain_val=`query "select domain from subdomains where name='$opt_subdomain_
 
 # Mathieu : On ne passe pas a la suite tant que la base n'a pas été correctement vidée.
 # Autrement dit, il faut que tous les enregistrements avec des clés étrangère subdomaine aient été virées.
-query "delete from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';" || exit 1 #provoque une erreur si ce n'est pas possible
+query "delete from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';" error "Client integrity at risk; aborting" #provoque une erreur si ce n'est pas possible
 
 #creating appropriate system side
 chattr -i $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&
 userdel -r "$opt_subdomain_val.$opt_domain_val" && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"

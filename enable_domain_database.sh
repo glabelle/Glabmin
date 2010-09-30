@@ -42,26 +42,26 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -z "$opt_nbuser" ] && opt_nbuser_val=$DB_DEFAULT_MAX_USER
 [ -z "$opt_nbbase" ] && opt_nbbase_val=$DB_DEFAULT_MAX_DB
 [ -z "$opt_dbroot" ] && opt_dbroot_val=$DB_DEFAULT_ROOT
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
 
-[ -z `echo $opt_nbuser_val|egrep '^[1-9]+[[:digit:]]*$'` ] && echo "ERROR : Invalid maximum user number $opt_nbuser_val" && exit 1
-[ -z `echo $opt_nbbase_val|egrep '^[1-9]+[[:digit:]]*$'` ] && echo "ERROR : Invalid maximum base number $opt_nbbase_val" && exit 1
-[ -z `echo $opt_dbroot_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid $DB_DEFAULT_ROOT root name $opt_dbroot_val" && exit 1
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && echo "ERROR : admin email $opt_email_val is invalid" && exit 1
+[ -z `echo $opt_nbuser_val|egrep '^[1-9]+[[:digit:]]*$'` ] && error "Invalid maximum user number $opt_nbuser_val"
+[ -z `echo $opt_nbbase_val|egrep '^[1-9]+[[:digit:]]*$'` ] && error "Invalid maximum base number $opt_nbbase_val"
+[ -z `echo $opt_dbroot_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid $DB_DEFAULT_ROOT root name $opt_dbroot_val"
+[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
 
-[ -n "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service database for domain $opt_domain_val already present" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val" ] && echo "ERROR : A file or directory \"$opt_dbroot_val\" exists in domain $opt_domain_val" && exit 1
+[ -n "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val already present"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val" ] && error "A file or directory \"$opt_dbroot_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');" || exit 1
+query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');" error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from database_domains where domain='$opt_domain_val'"`
@@ -77,6 +77,6 @@ chown root:root $opt_dbroot_val/.lock &&
 chattr +i $opt_dbroot_val/.lock && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

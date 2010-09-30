@@ -36,23 +36,23 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no domain, client or password, then exit
-[ -z "$opt_name" ] && echo "ERROR : Client name is missing" && exit 1
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_password" ] && echo "ERROR : Password is missing" && exit 1
+[ -z "$opt_name" ] && error "Client name is missing"
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_password" ] && error "Password is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && echo "ERROR : Client $opt_name_val is unknown" && exit 1
-[ -z `echo $opt_domain_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*([.]{1})[a-zA-Z0-9]+([.]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid domain name : $opt_domain_val" && exit 1
-[ -n "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domain_val already registered" && exit 1
+[ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
+[ -z `echo $opt_domain_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*([.]{1})[a-zA-Z0-9]+([.]?[a-zA-Z0-9]+)*$'` ] && error "Invalid domain name : $opt_domain_val"
+[ -n "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val already registered"
 #if no size, using default size
 [ -z "$opt_size" ] && opt_size_val=$DOMAIN_DEFAULT_SIZE
 #checking if given size is ok
-[ -z `echo $opt_size_val|egrep '^[1-9]+[[:digit:]]*$'` ] && echo "ERROR : Invalid domain size $opt_size_val" && exit 1
-[ -z `echo "$opt_size_val<=$DOMAIN_MAXIMUM_SIZE"|bc|egrep 1` ] && echo "ERROR : Domain size $opt_size_val too big (must be < $DOMAIN_MAXIMUM_SIZE)" && exit 1
+[ -z `echo $opt_size_val|egrep '^[1-9]+[[:digit:]]*$'` ] && error "Invalid domain size $opt_size_val"
+[ -z `echo "$opt_size_val<=$DOMAIN_MAXIMUM_SIZE"|bc|egrep 1` ] && error "Domain size $opt_size_val too big (must be < $DOMAIN_MAXIMUM_SIZE)"
 
 #registering new domain
 #MATHIEU : attention, le pool est en dur !
-query "insert into domains (name,password,client,size,pool) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val,'glabelle1');" || exit 1
+query "insert into domains (name,password,client,size,pool) values ('$opt_domain_val','$opt_password_val','$opt_name_val',$opt_size_val,'glabelle1');" error "Client integrity at risk; aborting"
 
 #validation :
 opt_password_val=`query "select password from domains where name='$opt_domain_val';"`
@@ -72,5 +72,5 @@ cat /etc/hosts|while read line; do echo ${line/`hostname`/`hostname` $opt_domain
 exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??

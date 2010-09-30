@@ -38,22 +38,22 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
 [ -z "$opt_root" ] && opt_root_val=$STAT_DEFAULT_HTTPS_ROOT
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid stats directory name $opt_root_val" && exit 1
-[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service https for domain $opt_domail_val is disabled" && exit 1
-[ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && echo "ERROR : Stat engine $opt_engine_val is unknown" && exit 1
-[ -n "`query "select domain from https_domains_stats where domain='$opt_domain_val' and  engine='$opt_engine_val';"`" ] && echo "ERROR : Service Stats with engine $opt_engine_val for domain $opt_domain_val is already enabled" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && echo "ERROR : A file or directory \"$opt_root_val\" exists in domain $opt_domain_val" && exit 1
+[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid stats directory name $opt_root_val"
+[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && error "Service https for domain $opt_domail_val is disabled"
+[ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && error "Stat engine $opt_engine_val is unknown"
+[ -n "`query "select domain from https_domains_stats where domain='$opt_domain_val' and  engine='$opt_engine_val';"`" ] && error "Service Stats with engine $opt_engine_val for domain $opt_domain_val is already enabled"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"
 
 
 #registering new https stats service
-query "insert into https_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');" || exit 1
+query "insert into https_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');" error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from https_domains_stats where domain='$opt_domain_val' and engine='$opt_engine_val';"`
@@ -84,9 +84,9 @@ webalizer )
 * )	;;
 esac
 
-$DAMEON_HTTP_SERVER reload>/dev/null && exit 0
+$DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

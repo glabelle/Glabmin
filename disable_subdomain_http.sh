@@ -32,13 +32,13 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_subdomain" ] && echo "ERROR : Subdomain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_subdomain" ] && error "Subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && echo "ERROR : Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val" && exit 1
-[ -z "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && echo "ERROR : Service http for subdomain $opt_subdomain_val of $opt_domain_val already disabled" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
+[ -z "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service http for subdomain $opt_subdomain_val of $opt_domain_val already disabled"
 
 #verif
 opt_domain_val=`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`
@@ -47,7 +47,7 @@ opt_root_val=`query "select documentroot from http_subdomains where domain='$opt
 opt_logs_val=`query "select logfiledir from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`
 
 #Deleting http service record
-query "delete from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  || exit 1
+query "delete from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
@@ -56,7 +56,7 @@ chattr -i $opt_logs_val/.lock &&
 rm -fr $opt_logs_val && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 
 

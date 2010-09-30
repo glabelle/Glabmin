@@ -3,6 +3,36 @@
 #methodes utilisées un peu partout dans les scripts ..
 source glabmin.conf
 
+
+
+#place un vérrou dans un dossier passé en paramêtre (p. ex. /home/glabelle )
+#Méthode sure, si le placement echoue, on nettoie et renvoie faux 
+placelock () {
+	( 
+		[ -d "$@" ] &&
+		touch $@/.lock &&
+		chmod 000 $@/.lock &&
+		chown root:root $@/.lock &&
+		chattr +i $@/.lock #-> sortie si tout se passe bien
+	) || ( 
+		[ -e "$@/.lock" ] && 		#-> Sorties possibles quand cela se passe mal
+		rm -fr  $@/.lock && false	#-> 
+	)
+}
+
+#methode inverse, supprime un verrou .. 
+removelock () {
+	(
+		[ -d "$@" ] &&
+		chattr -i $@/.lock && 
+		rm -fr $@/.lock
+	) || (
+		[ -e "$@/.lock" ] &&
+		chattr +i $@/.lock && false
+	)
+}
+
+
 query() {
 	mysql --silent -N -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASS -e"use $DATABASE_NAME ; $@"
 }

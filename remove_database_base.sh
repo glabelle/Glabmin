@@ -32,13 +32,13 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_base" ] && echo "ERROR : Base name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_base" ] && error "Base name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service database for domain $opt_domain_val is disabled" && exit 1
-[ -z "`query "select name from database_bases where domain='$opt_domain_val' and name='$opt_base_val'"`" ] && echo "ERROR : Base $opt_user_val not defined for domain $opt_domain_val" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val is disabled"
+[ -z "`query "select name from database_bases where domain='$opt_domain_val' and name='$opt_base_val'"`" ] && error "Base $opt_user_val not defined for domain $opt_domain_val"
 
 #verif
 opt_user_val=`query "select name from database_bases where domain='$opt_domain_val' and name='$opt_base_val';"`
@@ -47,7 +47,7 @@ opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_do
 
 
 #deleting user entry
-query "delete from database_bases where name='$opt_base_val';" || exit 1
+query "delete from database_bases where name='$opt_base_val';" error "Client integrity at risk; aborting"
 
 #upgrading system level
 $DAEMON_DATABASE_SERVER stop &&
@@ -57,6 +57,6 @@ $DAEMON_DATABASE_SERVER start &&
 mysql -N -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e "use mysql ; drop database $opt_base_val ;" && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

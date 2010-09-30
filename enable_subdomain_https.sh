@@ -47,22 +47,22 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
-[ -z "$opt_subdomain" ] && echo "ERROR : Subdomain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
+[ -z "$opt_subdomain" ] && error "Subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && echo "ERROR : Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
 [ -z "$opt_charset" ] && opt_charset_val=$HTTP_DEFAULT_CHARSET
-[ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && echo "ERROR : Charset $opt_charset_val is unknown" && exit 1
+[ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && error "Charset $opt_charset_val is unknown"
 [ -z "$opt_user" ] && opt_user_val="$opt_subdomain_val.$opt_domain_val"
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTPS_DEFAULT_ROOT
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && echo "ERROR : Invalid https root name $opt_root_val" && exit 1
+[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid https root name $opt_root_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && echo "ERROR : admin email $opt_email_val is invalid" && exit 1
-[ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && echo "ERROR : Service https for subdomain $opt_subdomain_val of $opt_domain_val already present" && exit 1
-[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val" ] && echo "ERROR : A file or directory \"$opt_root_val\" exists in subdomain $opt_subdomain_val of $opt_domain_val" && exit 1
+[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
+[ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service https for subdomain $opt_subdomain_val of $opt_domain_val already present"
+[ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in subdomain $opt_subdomain_val of $opt_domain_val"
 
 #registering new https service
 query "insert into https_subdomains (subdomain,domain,serveruser,servergroup,serveradmin,documentroot,charset) values ('$opt_subdomain_val','$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val','$opt_charset_val');"
@@ -85,9 +85,9 @@ touch $opt_root_val/.lock &&
 chmod 000 $opt_root_val/.lock &&
 chown root:root $opt_root_val/.lock &&
 chattr +i $opt_root_val/.lock &&
-$DAMEON_HTTP_SERVER reload>/dev/null && exit 0
+$DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

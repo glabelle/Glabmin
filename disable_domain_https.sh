@@ -31,12 +31,12 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service https for domain $opt_domain_val already disabled" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && error "Service https for domain $opt_domain_val already disabled"
 
 #verif
 opt_domain_val=`query "select domain from https_domains where domain='$opt_domain_val'"`
@@ -44,9 +44,9 @@ opt_root_val=`query "select documentroot from https_domains where domain='$opt_d
 opt_logs_val=`query "select logfiledir from https_domains where domain='$opt_domain_val'"`
 
 #Deleting https service record
-query "delete from https_domains where domain='$opt_domain_val'" || exit 1
+query "delete from https_domains where domain='$opt_domain_val'" error "Client integrity at risk; aborting"
 
-$DAMEON_HTTP_SERVER reload>/dev/null &&
+$DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock &&
 rm -fr $opt_root_val &&
 chattr -i $opt_logs_val/.lock &&
@@ -54,7 +54,7 @@ rm -fr $opt_logs_val && exit 0
 
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 
 

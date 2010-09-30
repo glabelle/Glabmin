@@ -31,12 +31,12 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domain_val is unknown" && exit 1
-[ -z "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && echo "ERROR : Service mail for domain $opt_domain_val already disabled" && exit 1
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -z "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && error "Service mail for domain $opt_domain_val already disabled"
 
 #registering new http service
 #verif
@@ -45,16 +45,16 @@ opt_root_val=`query "select mailroot from mail_domains where domain='$opt_domain
 opt_email_val=`query "select pooladmin from mail_domains where domain='$opt_domain_val';"`
 
 #deleting entry in glabelle db
-query "delete from mail_domains where domain='$opt_domain_val';"  || exit 1
+query "delete from mail_domains where domain='$opt_domain_val';"  error "Client integrity at risk; aborting"
 
 #upgrading system level
-[ -n "`lsof $opt_root_val`" ] && echo "ERROR : mail pool $opt_root_val cannot be unmounted" && echo "processes : `lsof -t $opt_root_val`" && exit 1
+[ -n "`lsof $opt_root_val`" ] && error "mail pool $opt_root_val cannot be unmounted" && echo "processes : `lsof -t $opt_root_val`"
 umount $opt_root_val/ &&
 chattr -i $opt_root_val/.lock &&
 rm -fr $opt_root_val &&
 rm -fr $MAIL_SYSTEM_POOL/$opt_domain_val && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

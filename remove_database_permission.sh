@@ -33,13 +33,13 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no client or no email, then exit
-[ -z "$opt_user" ] && echo "ERROR : User name is missing" && exit 1
-[ -z "$opt_base" ] && echo "ERROR : Base name is missing" && exit 1
+[ -z "$opt_user" ] && error "User name is missing"
+[ -z "$opt_base" ] && error "Base name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from database_bases where name='$opt_base_val'"`" ] && echo "ERROR : Base $opt_base_val not defined" && exit 1
-[ -z "`query "select name from database_users where name='$opt_user_val'"`" ] && echo "ERROR : User $opt_user_val not defined" && exit 1
-[ "`query "select domain from database_users where name='$opt_user_val'"`" != "`query "select domain from database_bases where name='$opt_base_val'"`" ] && echo "ERROR : User $opt_base_val and base does not belong to the same domain" && exit 1
+[ -z "`query "select name from database_bases where name='$opt_base_val'"`" ] && error "Base $opt_base_val not defined"
+[ -z "`query "select name from database_users where name='$opt_user_val'"`" ] && error "User $opt_user_val not defined"
+[ "`query "select domain from database_users where name='$opt_user_val'"`" != "`query "select domain from database_bases where name='$opt_base_val'"`" ] && error "User $opt_base_val and base does not belong to the same domain"
 [ -z "`query "select base from database_permissions where base='$opt_base_val' and user='$opt_user_val';"`" ] && echo "ERROR : User $opt_user_val is already disabled for database $opt_base_val" && exit 0
 
 #verif
@@ -47,12 +47,12 @@ opt_base_val=`query "select base from database_permissions where base='$opt_base
 opt_dbroot_val=`query "select user from database_permissions where base='$opt_base_val' and user='$opt_user_val';"`
 
 #deleting entry ..
-query "delete from database_permissions where base='$opt_base_val' and user='$opt_user_val';" || exit 1
+query "delete from database_permissions where base='$opt_base_val' and user='$opt_user_val';" error "Client integrity at risk; aborting"
 
 #upgrading system level
 mysql -N -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e "use mysql ; revoke all privileges on $opt_base_val.* from '$opt_user_val'@'localhost' ;" && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
 

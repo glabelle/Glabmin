@@ -30,18 +30,18 @@ done
 #if version, display version and exit 
 [ -n "$opt_version" ] && echo "Version $(basename $0) $VERSION" && exit 0
 #if no domain, then exit
-[ -z "$opt_domain" ] && echo "ERROR : Domain name is missing" && exit 1
+[ -z "$opt_domain" ] && error "Domain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && echo "ERROR : Domain $opt_domail_val is unknown" && exit 1
-[ -n "`lsof $DOMAIN_POOL_ROOT/$opt_domain_val`" ] && echo "ERROR : Domain $opt_domail_val cannot be unmounted" && echo "processes : `lsof -t $DOMAIN_POOL_ROOT/$opt_domain_val`" && exit 1 #umount check
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -n "`lsof $DOMAIN_POOL_ROOT/$opt_domain_val`" ] && error "Domain $opt_domail_val cannot be unmounted" && echo "processes : `lsof -t $DOMAIN_POOL_ROOT/$opt_domain_val`" #umount check
 
 #validation :
 opt_domain_val=`query "select name from domains where name='$opt_domain_val';"`
 
 # Mathieu : On ne passe pas a la suite tant que la base n'a pas été correctement vidée.
 # Autrement dit, il faut que tous les enregistrements avec des clés étrangère domaine aient été virées.
-query "delete from domains where name='$opt_domain_val';" || exit 1 #provoque une erreur si ce n'est pas possible
+query "delete from domains where name='$opt_domain_val';" error "Client integrity at risk; aborting" #provoque une erreur si ce n'est pas possible
 
 #creating appropriate system side
 cat /etc/hosts|while read line; do echo ${line/$opt_domain_val /} >> ./hosts.temp; done && cp ./hosts.temp /etc/hosts && rm ./hosts.temp &&
@@ -50,4 +50,4 @@ lvremove -f /dev$DOMAIN_POOL_ROOT/$opt_domain_val &&
 userdel -r $opt_domain_val && exit 0
 
 #otherwise, something went wrong.
-echo "ERROR : something unexpected appened" && exit 1
+error "something unexpected appened"
