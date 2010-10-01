@@ -46,6 +46,7 @@ done
 [ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
 [ -z "`query "select name from domains where name='$opt_domain_val' and client='$opt_name_val';"`" ] && error "Domain $opt_domain_val is unknown"
 [ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted"
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended"
 
 TEMPFILE="/tmp/subdomain_foreach.tmp"
 

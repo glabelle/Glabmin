@@ -35,15 +35,19 @@ done
 [ -z "$opt_domain" ] && error "Domain name is missing"
 [ -z "$opt_subdomain" ] && error "Subomain name is missing"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0;"`" ] && error "Domain $opt_domain_val is not mounted"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && warning "Domain $opt_domain_val is unmounted"
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && warning "Domain $opt_domain_val is suspended"
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subomain $opt_domain_val is unknown for domain $opt_domain_val"
+[ -n "`query "select name from subdomains where suspended=1 and name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subomain $opt_subdomain_val of domain $opt_domain_val is already suspended"
 
-#3) on désactive le sous-domaine ..
+#on désactive le sous-domaine :
+#1) eteindre apache si nécessaire
 APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"
 ( [ -n "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] || [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] ) && [ -n "$APACHE_STATUS" ] && $DAEMON_HTTP_SERVER stop >/dev/null
-query "update subdomains set status='active' where name='$opt_subdomain_val' and domain='$opt_domain_val';"
+#3) marquer le compte comme suspendu
+query "update subdomains set suspended=1 where name='$opt_subdomain_val' and domain='$opt_domain_val';" || error "Cannot write suspended statut in database for subdomain $opt_subdomain_val of domain $opt_domain_val"
+#2) bloquer l'utilsateur unix associé au sous-domaine
+usermod -L "$opt_subdomain_val.$opt_domain_val" || error "Cannot suspend unix user $opt_subdomain_val.$opt_domain_val"
+#3) allumer apache si nécessaire
 [ -n "$APACHE_STATUS" ] && [ -z "`$DAEMON_HTTP_SERVER status`" ] && $DAEMON_HTTP_SERVER start >/dev/null
-[ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && [ -z "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER stop >/dev/null
-
 

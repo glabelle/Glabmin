@@ -34,7 +34,8 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted"
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended" 
 [ -n "`lsof $DOMAIN_POOL_ROOT/$opt_domain_val`" ] && error "Domain $opt_domain_val cannot be unmounted" && echo "processes : `lsof -t $DOMAIN_POOL_ROOT/$opt_domain_val`" #umount check
 
 #validation :
