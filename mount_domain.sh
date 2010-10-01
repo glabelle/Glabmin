@@ -38,8 +38,7 @@ DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
 [ -n "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && error "can't start MySQL"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
 [ -n "`query "select name from domains where name='$opt_domain_val' and mounted=1;"`" ] && warning "Domain $opt_domain_val is already mounted"
-#&& [ -n "`mount|grep clients-$opt_domain_val`" ] && "Domain $opt_domain_val is already mounted"
-
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1;"`" ] && warning "Domain $opt_domain_val is suspended"
 
 #1) monter/activer le domaine
 #activer l'utilisateur du domaine s'il n'est pas suspendu
