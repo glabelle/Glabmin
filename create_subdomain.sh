@@ -39,7 +39,9 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted"
+
+exit 0
 [ -z `echo $opt_subdomain_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid subdomain name $opt_domain_val"
 [ -n "`query "select name from restricted_names where name='$opt_subdomain_val';"`" ] && error "Subdomain name $opt_subdomain_val is restricted"
 [ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val already registered"

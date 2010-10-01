@@ -49,7 +49,7 @@ usage(){
 [ -z "$PARAMETERS" ] && PARAMETERS="\n"
 [ -n "$OPTIONS" ] && OPTIONS=$OPTIONS"\n"
  
-echo "$(basename $0), $DESCRIPTION
+echo -e "$(basename $0), $DESCRIPTION
 
 Usage:
 ------
@@ -57,7 +57,7 @@ Usage:
  
 Options:
 -------------
- $OPTIONS(-h|--help) //Cet ecran d'aide
+ $OPTIONS (-h|--help) //Cet ecran d'aide
  (-v|--version) //Version du script
 
 Parameters:
