@@ -57,8 +57,8 @@ done
 [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended" 
 [ -z "$opt_charset" ] && opt_charset_val=$HTTP_DEFAULT_CHARSET
 [ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && error "Charset $opt_charset_val is unknown"
-[ -z "$opt_user" ] && opt_user_val='$opt_domain_val'
-[ -z "$opt_group" ] && opt_group_val='$opt_domain_val'
+[ -z "$opt_user" ] && opt_user_val=$opt_domain_val
+[ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTPS_DEFAULT_ROOT
 [ -z "$opt_logs" ] && opt_logs_val=$HTTPS_DEFAULT_LOGDIR
 [ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid https root name $opt_root_val"
