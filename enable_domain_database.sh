@@ -62,7 +62,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val" ] && error "A file or directory \"$opt_dbroot_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');" error "Client integrity at risk; aborting"
+query "insert into database_domains (domain,nbuser,nbbase,mailadmin,dbroot) values ('$opt_domain_val','$opt_nbuser_val','$opt_nbbase_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from database_domains where domain='$opt_domain_val'"`

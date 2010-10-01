@@ -57,7 +57,7 @@ opt_engine_val=`query "select engine from http_subdomains_stats where domain='$o
 opt_root_val=`query "select documentroot from http_subdomains_stats where domain='$opt_domain_val' and subdomain='$opt_subdomain_val' and engine='$opt_engine_val';"`
 
 #deleting http stats service
-query "delete from http_subdomains_stats where engine='$opt_engine_val' and domain='$opt_domain_val' and subdomain='$opt_subdomain_val';" error "Client integrity at risk; aborting"
+query "delete from http_subdomains_stats where engine='$opt_engine_val' and domain='$opt_domain_val' and subdomain='$opt_subdomain_val';" || error "Client integrity at risk; aborting"
 
 #upgrading system level
 $DAEMON_HTTP_SERVER reload>/dev/null

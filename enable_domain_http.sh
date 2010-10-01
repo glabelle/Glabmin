@@ -70,7 +70,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val" ] && error "A file or directory \"$opt_logs_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val');" error "Client integrity at risk; aborting"
+query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from http_domains where domain='$opt_domain_val'"`

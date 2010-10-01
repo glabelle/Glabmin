@@ -40,7 +40,7 @@ done
 [ -z "`query "select domain from backup_domains where domain='$opt_domain_val';"`" ] && error "Service backup for domain $opt_domain_val already disabled"
 
 #deleting entry in glabelle db
-query "delete from backup_domains where domain='$opt_domain_val';" error "Client integrity at risk; aborting"
+query "delete from backup_domains where domain='$opt_domain_val';" || error "Client integrity at risk; aborting"
 
 #upgrading system level
 filename="glabelle.net`echo $DOMAIN_POOL_ROOT | sed -e 's/\//-/g'`-$opt_domain_val.*.tar.gz"

@@ -55,7 +55,7 @@ done
 [ "`query "select count(*) from database_users where domain='$opt_domain_val';"`" -ge "`query "select nbuser from database_domains where domain='$opt_domain_val';"`" ] && error "cannot add another user for domain $opt_domain_val"
 
 #registering new http service
-query "insert into database_users (domain,name,password,email) values ('$opt_domain_val','$opt_user_val','$opt_password_val','$opt_email_val');" error "Client integrity at risk; aborting"
+query "insert into database_users (domain,name,password,email) values ('$opt_domain_val','$opt_user_val','$opt_password_val','$opt_email_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_user_val=`query "select name from database_users where domain='$opt_domain_val' and name='$opt_user_val';"`

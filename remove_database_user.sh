@@ -45,7 +45,7 @@ done
 opt_user_val=`query "select name from database_users where domain='$opt_domain_val' and name='$opt_user_val';"`
 
 #deleting user entry
-query "delete from database_users where name='$opt_user_val';" error "Client integrity at risk; aborting"
+query "delete from database_users where name='$opt_user_val';" || error "Client integrity at risk; aborting"
 
 #upgrading system level
 mysql -N -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e "use mysql ; drop user '$opt_user_val'@'localhost' ;" && exit 0

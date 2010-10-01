@@ -57,7 +57,7 @@ done
 
 
 #registering new http stats service
-query "insert into http_subdomains_stats (domain,subdomain,engine,documentroot) values ('$opt_domain_val','$opt_subdomain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val');" error "Client integrity at risk; aborting"
+query "insert into http_subdomains_stats (domain,subdomain,engine,documentroot) values ('$opt_domain_val','$opt_subdomain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val');" || error "Client integrity at risk; aborting"
 
 
 #verif

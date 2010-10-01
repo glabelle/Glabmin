@@ -54,7 +54,7 @@ done
 
 
 #registering new https stats service
-query "insert into https_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');" error "Client integrity at risk; aborting"
+query "insert into https_domains_stats (domain,engine,documentroot) values ('$opt_domain_val','$opt_engine_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from https_domains_stats where domain='$opt_domain_val' and engine='$opt_engine_val';"`

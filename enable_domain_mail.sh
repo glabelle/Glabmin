@@ -54,7 +54,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into mail_domains (domain,pooladmin,mailroot,password) values ('$opt_domain_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_password_val');" error "Client integrity at risk; aborting"
+query "insert into mail_domains (domain,pooladmin,mailroot,password) values ('$opt_domain_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_password_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from mail_domains where domain='$opt_domain_val'"`

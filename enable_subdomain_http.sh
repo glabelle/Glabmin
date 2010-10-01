@@ -73,7 +73,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_logs_val" ] && error "A file or directory \"$opt_logs_val\" exists in subdomain $opt_subdomain_val of $opt_domain_val"
 
 #registering new http service
-query "insert into http_subdomains (subdomain,domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_subdomain_val','$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_logs_val');" error "Client integrity at risk; aborting"
+query "insert into http_subdomains (subdomain,domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_subdomain_val','$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_logs_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`
