@@ -47,7 +47,17 @@ if [ -n "`query "select domain from database_domains where domain='$opt_domain_v
 then
 	opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_domain_val';"` &&
     base_list=`query "select name from database_bases where domain='$opt_domain_val';"` &&
-    $DAEMON_DATABASE_SERVER stop >/dev/null
+    user_list=`query "select name from database_users where domain='$opt_domain_val';"`
+	#2) On désactive les connexion des utilisateurs de bdd associés au domaine (si le domaine n'est pas bani)
+	if [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=0;"`" ]
+	then
+		for opt_user_val in $user_list
+		do
+			adminquery "RENAME USER '$opt_user_val'@'localhost' TO  '$opt_user_val'@'nohost';";
+		done
+	fi
+	#3) On démonte les bindings des bases du domaine
+	$DAEMON_DATABASE_SERVER stop >/dev/null
     for opt_base_val in $base_list
     do
     	[ -n "`mount|grep "$DB_SYSTEM_POOL$opt_base_val"`" ] && umount $DB_SYSTEM_POOL$opt_base_val
@@ -62,13 +72,21 @@ then
 	[ -n "`mount|grep "$MAIL_SYSTEM_POOL$opt_base_val"`" ] && umount $MAIL_SYSTEM_POOL$opt_domain_val
 fi
 
-#3) on désactive apache puis on démonte et désactive le domaine ..
+#3) on désactive apache, les utilisateurs unix du domaine et sous domaines puis on démonte et désactive le domaine ..
+#couper apache si nécéssaire
 APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"
 ( [ -n "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from http_subdomains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val';"`" ] ) && [ -n "$APACHE_STATUS" ] && $DAEMON_HTTP_SERVER stop >/dev/null
 [ -n "`mount|grep clients-$opt_domain_val`" ] && umount /dev$DOMAIN_POOL_ROOT/$opt_domain_val
+#désactiver les utilisateurs sous-domaine qui ne sont pas suspendus:
+for opt_subdomain_val in `query "select name from subdomains where domain='$opt_domain_val' and suspended=0;"`
+do
+	usermod -L "$opt_subdomain_val.$opt_domain_val"
+done 
+#desactiver l'utilisateur du domaine s'il ne l'etait pas encore :
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=0;"`" ] && usermod -L "$opt_domain_val"
+#modifier l'état en base
 query "update domains set mounted=0 where name='$opt_domain_val';"
-
-
+#allumer apache si nécessaire
 [ -n "$APACHE_STATUS" ] && [ -z "`$DAEMON_HTTP_SERVER status`" ] && $DAEMON_HTTP_SERVER start >/dev/null
 [ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && [ -z "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER stop >/dev/null
 

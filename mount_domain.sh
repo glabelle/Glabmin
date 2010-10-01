@@ -42,6 +42,14 @@ DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
 
 
 #1) monter/activer le domaine
+#activer l'utilisateur du domaine s'il n'est pas suspendu
+[ -n "`query "select name from domains where name='$opt_domain_val' and suspended=0;"`" ] && usermod -U $opt_domain_val
+#activer les utilisateur des sous-domaines qui ne sont pas suspendus
+for opt_subdomain_val in `query "select name from subdomains where domain='$opt_domain_val' and suspended=0;"`
+do
+	usermod -U "$opt_subdomain_val.$opt_domain_val"
+done
+#désactiver apache si nécessaire
 APACHE_STATUS="`$DAEMON_HTTP_SERVER status`"
 ( [ -n "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from http_subdomains where domain='$opt_domain_val';"`" ] || [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val';"`" ] ) && [ -n "$APACHE_STATUS" ] && $DAEMON_HTTP_SERVER stop >/dev/null
 [ -z "`mount|grep clients-$opt_domain_val`" ] && mount /dev$DOMAIN_POOL_ROOT/$opt_domain_val $DOMAIN_POOL_ROOT/$opt_domain_val
@@ -61,12 +69,25 @@ if [ -n "`query "select domain from database_domains where domain='$opt_domain_v
 then
     opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_domain_val';"` &&
     base_list=`query "select name from database_bases where domain='$opt_domain_val';"` &&
+    user_list=`query "select name from database_users where domain='$opt_domain_val';"`
+	#2) On active les connexion des utilisateurs de bdd associés au domaine (si le domaine n'est pas bani)
+	if [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=0;"`" ]
+	then
+		for opt_user_val in $user_list
+		do
+			adminquery "RENAME USER '$opt_user_val'@'nohost' TO  '$opt_user_val'@'localhost';";
+		done
+	fi
     $DAEMON_DATABASE_SERVER stop >/dev/null
     for opt_base_val in $base_list
     do  
         [ -z "`mount|grep "$DB_SYSTEM_POOL$opt_base_val"`" ] && mount --bind $opt_dbroot_val/$opt_base_val/ $DB_SYSTEM_POOL$opt_base_val
     done
     $DAEMON_DATABASE_SERVER start >/dev/null
+    
 fi
 
 [ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && [ -z "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER stop >/dev/null
+
+
+

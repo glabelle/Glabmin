@@ -37,6 +37,10 @@ query() {
 	mysql --silent -N -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASS -e"use $DATABASE_NAME ; $@"
 }
 
+adminquery() {
+	mysql -N -h$DATABASE_HOST -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e"use mysql ; $@"
+}
+
 error() {
 	echo  -e '\E[41m'"\033[1mERROR\033[0m"": $@" ; exit 1
 }
