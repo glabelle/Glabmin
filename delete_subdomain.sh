@@ -36,7 +36,7 @@ done
 [ -z "$opt_subdomain" ] && error "subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_domail_val is unknown for domain $opt_domain_val"
+[ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_domain_val is unknown for domain $opt_domain_val"
 
 #validation :
 opt_subdomain_val=`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`

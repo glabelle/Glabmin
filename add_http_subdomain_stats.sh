@@ -44,12 +44,13 @@ done
 [ -z "$opt_subdomain" ] && error "Subdomain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
 [ -z "$opt_root" ] && opt_root_val=$SSTAT_DEFAULT_HTTP_ROOT
 [ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid stats directory name $opt_root_val"
-[ -z "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service HTTP for subdomain $opt_subdomain_val of domain $opt_domail_val is disabled"
+[ -z "`query "select domain from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service HTTP for subdomain $opt_subdomain_val of domain $opt_domain_val is disabled"
 [ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && error "Stat engine $opt_engine_val is unknown"
 [ -n "`query "select domain from http_subdomains_stats where domain='$opt_domain_val' and subdomain='$opt_subdomain_val' and  engine='$opt_engine_val';"`" ] && error "Service Stats with engine $opt_engine_val for subdomain $opt_subdomain_val of domain $opt_domain_val is already enabled"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in subdomain $opt_domain_val"

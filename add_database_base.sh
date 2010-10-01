@@ -35,7 +35,8 @@ done
 [ -z "$opt_base" ] && error "Base name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
 [ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val is disabled"
 [ -z `echo $opt_base_val|egrep '^[a-zA-Z]+([_]?[a-zA-Z0-9]+)$'` ] && error "Invalid base name $opt_base_val"
 [ "`echo ${#opt_base_val}`" -gt "16"  ] && error "Base name $opt_base_val too long"

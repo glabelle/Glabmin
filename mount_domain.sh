@@ -15,10 +15,10 @@ eval set -- "$PARAMS"
 
 while true ; do
 	case "$1" in
-	-d|--domain) opt_domain="1"	; shift 1
+	-d|--domain) opt_domain="1"; shift 1
 		[ -n "$1" ] && opt_domain_val=$1 && shift 1 ;;
 	-h|--help) opt_help="1"	; shift 1 ;;
-	-v|--version) opt_version="1"	; shift 1 ;;
+	-v|--version) opt_version="1"; shift 1 ;;
 	--) shift ; break ;;
 	esac
 done
@@ -36,7 +36,7 @@ done
 DB_STATUS="`$DAEMON_DATABASE_SERVER status`"
 [ -n "`echo $DB_STATUS|grep 'MySQL is stopped'`" ] && $DAEMON_DATABASE_SERVER start
 [ -n "`$DAEMON_DATABASE_SERVER status|grep 'MySQL is stopped'`" ] && error "can't start MySQL"
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
 [ -n "`query "select name from domains where name='$opt_domain_val' and mounted=1;"`" ] && warning "Domain $opt_domain_val is already mounted"
 #&& [ -n "`mount|grep clients-$opt_domain_val`" ] && "Domain $opt_domain_val is already mounted"
 

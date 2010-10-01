@@ -36,7 +36,8 @@ done
 [ -z "$opt_user" ] && error "User name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
 [ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val is disabled"
 [ -z "`query "select name from database_users where domain='$opt_domain_val' and name='$opt_user_val'"`" ] && error "User $opt_user_val not defined for domain $opt_domain_val"
 

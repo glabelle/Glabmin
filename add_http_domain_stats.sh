@@ -42,11 +42,12 @@ done
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
 [ -z "$opt_root" ] && opt_root_val=$STAT_DEFAULT_HTTP_ROOT
 [ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid stats directory name $opt_root_val"
-[ -z "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] && error "Service HTTP for domain $opt_domail_val is disabled"
+[ -z "`query "select domain from http_domains where domain='$opt_domain_val';"`" ] && error "Service HTTP for domain $opt_domain_val is disabled"
 [ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && error "Stat engine $opt_engine_val is unknown"
 [ -n "`query "select domain from http_domains_stats where domain='$opt_domain_val' and  engine='$opt_engine_val';"`" ] && error "Service Stats with engine $opt_engine_val for domain $opt_domain_val is already enabled"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"

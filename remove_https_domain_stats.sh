@@ -39,9 +39,10 @@ done
 
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
-[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && error "Service https for domain $opt_domail_val is disabled"
+[ -z "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && error "Service https for domain $opt_domain_val is disabled"
 [ -z "`query "select name from stat_engines where name='$opt_engine_val';"`" ] && error "Stat engine $opt_engine_val is unknown"
 [ -z "`query "select domain from https_domains_stats where domain='$opt_domain_val' and  engine='$opt_engine_val';"`" ] && error "Service Stats with engine $opt_engine_val for domain $opt_domain_val is not enabled"
 

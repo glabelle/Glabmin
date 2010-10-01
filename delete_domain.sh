@@ -33,8 +33,9 @@ done
 [ -z "$opt_domain" ] && error "Domain name is missing"
 
 #argument vs system ckeckings :
-[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domail_val is unknown"
-[ -n "`lsof $DOMAIN_POOL_ROOT/$opt_domain_val`" ] && error "Domain $opt_domail_val cannot be unmounted" && echo "processes : `lsof -t $DOMAIN_POOL_ROOT/$opt_domain_val`" #umount check
+[ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`lsof $DOMAIN_POOL_ROOT/$opt_domain_val`" ] && error "Domain $opt_domain_val cannot be unmounted" && echo "processes : `lsof -t $DOMAIN_POOL_ROOT/$opt_domain_val`" #umount check
 
 #validation :
 opt_domain_val=`query "select name from domains where name='$opt_domain_val';"`
