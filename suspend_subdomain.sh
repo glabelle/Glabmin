@@ -35,7 +35,7 @@ done
 [ -z "$opt_domain" ] && error "Domain name is missing"
 [ -z "$opt_subdomain" ] && error "Subomain name is missing"
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
 [ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0;"`" ] && error "Domain $opt_domain_val is not mounted"
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subomain $opt_domain_val is unknown for domain $opt_domain_val"
 

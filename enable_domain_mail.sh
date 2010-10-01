@@ -44,7 +44,7 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
 [ -z "$opt_root" ] && opt_root_val=$MAIL_DEFAULT_ROOT
 [ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid mail root name $opt_root_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`

@@ -47,7 +47,7 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
 [ -z "$opt_nbuser" ] && opt_nbuser_val=$DB_DEFAULT_MAX_USER
 [ -z "$opt_nbbase" ] && opt_nbbase_val=$DB_DEFAULT_MAX_DB
 [ -z "$opt_dbroot" ] && opt_dbroot_val=$DB_DEFAULT_ROOT

@@ -45,7 +45,7 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val is unknown"
-[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`"] && error "Domain $opt_domain_val is unmounted" 
+[ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted" 
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
 [ -z "$opt_engine" ] && opt_engine_val=$STAT_DEFAULT_ENGINE
 [ -z "$opt_root" ] && opt_root_val=$STAT_DEFAULT_HTTPS_ROOT
