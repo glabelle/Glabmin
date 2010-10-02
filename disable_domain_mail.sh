@@ -44,16 +44,34 @@ done
 opt_domain_val=`query "select domain from mail_domains where domain='$opt_domain_val';"`
 opt_root_val=`query "select mailroot from mail_domains where domain='$opt_domain_val';"`
 opt_email_val=`query "select pooladmin from mail_domains where domain='$opt_domain_val';"`
+opt_mailadmin_val=`query "select mailadmin from mail_domains where domain='$opt_domain_val';"`
 
 #deleting entry in glabelle db
 query "delete from mail_domains where domain='$opt_domain_val';" || error "Client integrity at risk; aborting"
 
+#deleting entries in Postfix DB :
+#deleting aliases:
+mailquery "delete from alias where domain='$opt_domain_val';" || error "Cannot delete aliases of domain $opt_domain_val from postfix database"
+#deleting mailboxes:
+mailquery "delete from mailbox where domain='$opt_domain_val';" || error "Cannot delete mailboxes of domain $opt_domain_val from postfix database"
+#deleting domainadmin:
+mailquery "delete from domain_admins where domain='$opt_domain_val';" || error "Cannot delete domain admins of domain $opt_domain_val from postfix database"
+#deleting admin:
+mailquery "delete from admin where username='$opt_mailadmin_val@$opt_domain_val';" || error "Cannot delete admins $opt_mailadmin_val@$opt_domain_val from postfix database"
+#deleting domain:
+mailquery "delete from domain where domain='$opt_domain_val';" || error "Cannot delete domain $opt_domain_val from postfix database"
+
 #upgrading system level
-[ -n "`lsof $opt_root_val`" ] && echo "processes : `lsof -t $opt_root_val`" && error "mail pool $opt_root_val cannot be unmounted"
-umount $opt_root_val/ &&
+if [ -n "`umount $opt_root_val/`" ] 
+then
+	$DAEMON_IMAP_SERVER stop && $DAEMON_POP3_SERVER stop && opt_reload="1"
+	[ -n "`umount $opt_root_val/`" ] && error "mail pool $opt_root_val cannot be unmounted"
+fi
 chattr -i $opt_root_val/.lock &&
 rm -fr $opt_root_val &&
-rm -fr $MAIL_SYSTEM_POOL/$opt_domain_val && exit 0
+rm -fr $MAIL_SYSTEM_POOL/$opt_domain_val 
+[ -n "$opt_reload" ] && $DAEMON_IMAP_SERVER start && $DAEMON_POP3_SERVER start
+exit 0
 
 #otherwise, something went wrong.
 error "something unexpected appened"
