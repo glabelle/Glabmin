@@ -41,6 +41,10 @@ adminquery() {
 	mysql -N -h$DATABASE_HOST -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e"use mysql ; $@"
 }
 
+mailquery() {
+	mysql -N -h$MAIL_DATABASE_HOST -u$MAIL_DATABASE_USER -p$MAIL_DATABASE_PASS -e"use $MAIL_DATABASE_NAME ; $@"
+}
+
 error() {
 	echo  -e '\E[41m'"\033[1mERROR\033[0m"": $@" ; exit 1
 }

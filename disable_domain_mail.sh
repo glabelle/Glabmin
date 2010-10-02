@@ -47,7 +47,7 @@ opt_root_val=`query "select mailroot from mail_domains where domain='$opt_domain
 opt_email_val=`query "select pooladmin from mail_domains where domain='$opt_domain_val';"`
 
 #deleting entry in glabelle db
-query "delete from mail_domains where domain='$opt_domain_val';"  error "Client integrity at risk; aborting"
+query "delete from mail_domains where domain='$opt_domain_val';" || error "Client integrity at risk; aborting"
 
 #upgrading system level
 [ -n "`lsof $opt_root_val`" ] && error "mail pool $opt_root_val cannot be unmounted" && echo "processes : `lsof -t $opt_root_val`"
