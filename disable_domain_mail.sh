@@ -40,7 +40,6 @@ done
 [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended"
 [ -z "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && error "Service mail for domain $opt_domain_val already disabled"
 
-#registering new http service
 #verif
 opt_domain_val=`query "select domain from mail_domains where domain='$opt_domain_val';"`
 opt_root_val=`query "select mailroot from mail_domains where domain='$opt_domain_val';"`
@@ -50,7 +49,7 @@ opt_email_val=`query "select pooladmin from mail_domains where domain='$opt_doma
 query "delete from mail_domains where domain='$opt_domain_val';" || error "Client integrity at risk; aborting"
 
 #upgrading system level
-[ -n "`lsof $opt_root_val`" ] && error "mail pool $opt_root_val cannot be unmounted" && echo "processes : `lsof -t $opt_root_val`"
+[ -n "`lsof $opt_root_val`" ] && echo "processes : `lsof -t $opt_root_val`" && error "mail pool $opt_root_val cannot be unmounted"
 umount $opt_root_val/ &&
 chattr -i $opt_root_val/.lock &&
 rm -fr $opt_root_val &&
