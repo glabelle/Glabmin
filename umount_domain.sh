@@ -65,11 +65,29 @@ then
     $DAEMON_DATABASE_SERVER start >/dev/null
 fi
 
-#2) y'a t'il un pool de mail ? Si oui, on démonte sa racine
-#peut etre débrancher les serveurs de courrier, non ?
-if [ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] 
+#2) y'a t'il un pool de mail ? Si oui, on démonte sa racine (en ayant au préalable désactivé les boites mails ..)
+if [ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ]
 then
-	[ -n "`mount|grep "$MAIL_SYSTEM_POOL$opt_base_val"`" ] && umount $MAIL_SYSTEM_POOL$opt_domain_val
+	#mailroot :
+	opt_mailroot_val="`query "select mailroot from mail_domains where domain='$opt_domain_val';"`"
+	#memorisation des comptes de courriel déjà désactivés :
+	opt_disabled_accounts_val="`mailquery "select username from mailbox where active=0;"`"
+	[ -n "$opt_disabled_accounts_val" ] && ( query "update mail_domains set suspendatmount='$opt_disabled_accounts_val' where domain='$opt_domain_val';" || error "cannot save suspended mailboxes into database" )
+	#desactiver les comptes de courrier du domaine :
+	[ -n "$opt_disabled_accounts_val" ] && ( mailquery "update mailbox set active=0 where domain='$opt_domain_val';" || error "cannot suspend mailboxes" )
+	if [ -n "`mount|grep "$opt_mailroot_val"`" ]
+	then
+		if [ -n "`umount $opt_mailroot_val`" ]
+		then
+			opt_daemon_pop_name="`echo $DAEMON_POP3_SERVER | sed 's/^.*\/\(.*\)$/\1/g'`" 
+			[ -n "`ps aux|grep ^$opt_daemon_pop_name`" ] &&  $DAEMON_POP3_SERVER stop && opt_reload_pop3="1"
+			opt_daemon_imap_name="`echo $DAEMON_IMAP_SERVER | sed 's/^.*\/\(.*\)$/\1/g'`"
+			[ -n "`ps aux|grep ^$opt_daemon_imap_name`" ] && $DAEMON_IMAP_SERVER stop && opt_reload_imap="1"
+			[ -n "`umount $opt_mailroot_val/`" ] && error "mail pool $opt_mailroot_val cannot be unmounted"
+			[ -n "$opt_reload_imap" ] $DAEMON_IMAP_SERVER start
+			[ -n "$opt_reload_pop3" ] $DAEMON_POP3_SERVER start
+		fi
+	fi
 fi
 
 #3) on désactive apache, les utilisateurs unix du domaine et sous domaines puis on démonte et désactive le domaine ..

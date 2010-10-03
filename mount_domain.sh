@@ -58,8 +58,20 @@ query "update domains set mounted=1 where name='$opt_domain_val';"
 
 #2) y'a t'il un pool de mail ? Si oui, on monte sa racine
 if [ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] 
-then
+then	
 	[ -z "`mount|grep "$MAIL_SYSTEM_POOL$opt_domain_val"`" ] && mount --bind `query "select mailroot from mail_domains where domain='$opt_domain_val';"` $MAIL_SYSTEM_POOL$opt_domain_val
+	#on active les boites mails :
+	mailquery "update mailbox set active=1 where domain='$opt_domain_val';"
+	#on desactives les boites qui n'etaient pas actives à l'origine
+	opt_mailbox_list=`query "select suspendatmount from mail_domains where domain='$opt_domain_val';"`
+	echo $opt_deactivate_val
+	for opt_deactive_val in `query "select suspendatmount from mail_domains where domain='$opt_domain_val';"`
+	do
+		echo $opt_deactive_val
+		mailquery "update mailbox set active=0 where domain='$opt_domain_val' and username='$opt_deactive_val';"
+	done
+	#remettre a NULL :
+	query "update mail_domains set suspendatmount=NULL where domain='$opt_domain_val';"
 fi
 
 
