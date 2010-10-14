@@ -50,7 +50,7 @@ opt_root_val=`query "select documentroot from http_subdomains where domain='$opt
 opt_logs_val=`query "select logfiledir from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`
 
 #Deleting http service record
-query "delete from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  error "Client integrity at risk; aborting"
+query "delete from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'" || error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
