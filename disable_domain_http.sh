@@ -44,7 +44,7 @@ opt_root_val=`query "select documentroot from http_domains where domain='$opt_do
 opt_logs_val=`query "select logfiledir from http_domains where domain='$opt_domain_val'"`
 
 #Deleting http service record
-query "delete from http_domains where domain='$opt_domain_val'" error "Client integrity at risk; aborting"
+query "delete from http_domains where domain='$opt_domain_val'" || error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock &&
@@ -54,12 +54,6 @@ rm -fr $opt_logs_val && exit 0
 
 #otherwise, something went wrong.
 error "something unexpected appened"
-#peut etre effacer içi l'enregistrement en bdd ??
-
-
-
-
-
 
 
 

@@ -49,7 +49,7 @@ opt_subdomain_val=`query "select subdomain from https_subdomains where domain='$
 opt_root_val=`query "select documentroot from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"` #ATTENTION : cas de destruction de la racine serveur si "/" en param !!!!!!!!!!!!
 
 #Deleting https service record
-query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  error "Client integrity at risk; aborting"
+query "delete from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"  || error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
 chattr -i $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
