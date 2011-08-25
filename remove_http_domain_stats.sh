@@ -64,7 +64,7 @@ webalizer )
 	;;
 * )	;;
 esac
-removelock$opt_root_val &&
+removelock $opt_root_val &&
 rm -fr $opt_root_val && exit 0
 
 #otherwise, something went wrong.
