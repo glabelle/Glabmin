@@ -53,9 +53,9 @@ opt_logs_val=`query "select logfiledir from http_subdomains where domain='$opt_d
 query "delete from http_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'" || error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
-removelock $opt_root_val/.lock && #-> normalement on évite la pire en sortant là ....
+removelock $opt_root_val && #-> normalement on évite la pire en sortant là ....
 rm -fr $opt_root_val &&  #Fichue ligne !!!! Il faut vérifier ce parametre avant d'éxécuter. Je sais pas trop comment .... Si on a / en bdd au moment de 
-removelock $opt_logs_val/.lock &&
+removelock $opt_logs_val &&
 rm -fr $opt_logs_val && exit 0
 
 #otherwise, something went wrong.
