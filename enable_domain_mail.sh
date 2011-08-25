@@ -61,10 +61,10 @@ done
 [ -z "$opt_maxmailbox" ] && opt_maxmailbox_val=$MAIL_DEFAULT_MAXMAILBOX
 [ -z `echo $opt_maxmailbox_val|egrep '^[1-9][0-9]?$'` ] && error "Invalid maximum mail box number $opt_maxmailbox_val (1->99)"
 [ -z `echo $opt_maxalias_val|egrep '^[1-9][0-9]?$'` ] && error "Invalid maximum alias box number $opt_maxalias_val (1->99)"
-[ -z `echo $opt_mailadmin_val|egrep '^[a-zA-Z]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid admin login $opt_mailadmin_val"
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid mail root name $opt_root_val"
+[ -z `echo $opt_mailadmin_val|egrep $MAIL_MAILADMIN_REGEXP` ] && error "Invalid admin login $opt_mailadmin_val"
+[ -z `echo $opt_root_val|egrep $MAIL_ROOT_REGEXP` ] && error "Invalid mail root name $opt_root_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "pool contact email $opt_email_val is invalid"
+[ -z `echo $opt_email_val|egrep $MAIL_CONTACT_EMAIL_REGEXP` ] && error "pool contact email $opt_email_val is invalid"
 [ -z "$opt_trueadminbox" ] && [ "$opt_mailadmin_val@$opt_domain_val" = "$opt_email_val" ] && warning "Cannot create mailadmin alias: pool admin email ($opt_email_val) equals mailadmin login ($opt_mailadmin_val@$opt_domain_val). A true mailadmin box will be created" && opt_trueadminbox="1"
 [ -z "$opt_password" ] && opt_password_val=`query "select password from domains where name='$opt_domain_val';"`
 [ -n "`query "select domain from mail_domains where domain='$opt_domain_val';"`" ] && error "Service mail for domain $opt_domain_val already present"

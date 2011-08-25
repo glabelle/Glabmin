@@ -42,7 +42,7 @@ done
 
 #argument vs system ckeckings :
 [ -z "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client $opt_name_val is unknown"
-[ -z `echo $opt_domain_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*([.]{1})[a-zA-Z0-9]+([.]?[a-zA-Z0-9]+)*$'` ] && error "Invalid domain name : $opt_domain_val"
+[ -z `echo $opt_domain_val|egrep $DOMAIN_NAME_REGEXP` ] && error "Invalid domain name : $opt_domain_val"
 [ -n "`query "select name from domains where name='$opt_domain_val';"`" ] && error "Domain $opt_domain_val already registered"
 #if no size, using default size
 [ -z "$opt_size" ] && opt_size_val=$DOMAIN_DEFAULT_SIZE

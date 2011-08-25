@@ -12,6 +12,7 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_s
  (-g|--group) apache_groupe // groupe apache (defaut : nom_du_domaine)
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
  (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTPS_DEFAULT_ROOT)"
+ (-l|--logs) logs_dir // repertoire des logs https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTP_DEFAULT_LOGDIR)
 
 
 PARAMS=`getopt -o d:,s:,u:,c:,g:,e:,r:,h,v -l domain:,subdomain:,user:,charset:,group:,email:,root:,help,version -- "$@"`
@@ -35,6 +36,8 @@ while true ; do
 		[ -n "$1" ] && opt_email_val=$1 && shift 1 ;;
 	-r|--root) opt_root="1"	; shift 1
 		[ -n "$1" ] && opt_root_val=$1 && shift 1 ;;
+	-l|--logs) opt_logs="1"	; shift 1
+		[ -n "$1" ] && opt_logs_val=$1 && shift 1 ;;
 	-h|--help) opt_help="1"	; shift 1 ;;
 	-v|--version) opt_version="1"; shift 1 ;;
 	--) shift ; break ;;
@@ -61,9 +64,11 @@ done
 [ -z "$opt_user" ] && opt_user_val="$opt_subdomain_val.$opt_domain_val"
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTPS_DEFAULT_ROOT
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid https root name $opt_root_val"
+[ -z "$opt_logs" ] && opt_logs_val=$HTTP_DEFAULT_LOGDIR
+[ -z `echo $opt_root_val|egrep $HTTPS_ROOT_REGEXP` ] && error "Invalid https root name $opt_root_val"
+[ -z `echo $opt_logs_val|egrep $HTTPS_LOGDIR_REGEXP` ] && error "Invalid logs directory name $opt_logs_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
+[ -z `echo $opt_email_val|egrep $HTTPS_CONTACT_EMAIL_REGEXP` ] && error "admin email $opt_email_val is invalid"
 [ -n "`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val';"`" ] && error "Service https for subdomain $opt_subdomain_val of $opt_domain_val already present"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in subdomain $opt_subdomain_val of $opt_domain_val"
 
@@ -89,6 +94,16 @@ chmod 000 $opt_root_val/.lock &&
 chown root:root $opt_root_val/.lock &&
 chattr +i $opt_root_val/.lock &&
 $DAEMON_HTTP_SERVER reload>/dev/null && exit 0
+
+#create logsdir
+mkdir $opt_logs_val &&
+chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $opt_logs_val &&
+chmod 755 -R $opt_logs_val &&
+touch $opt_logs_val/.lock &&
+chmod 000 $opt_logs_val/.lock &&
+chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $opt_logs_val &&
+chown root:root $opt_logs_val/.lock &&
+chattr +i $opt_logs_val/.lock &&
 
 #otherwise, something went wrong.
 error "something unexpected appened"

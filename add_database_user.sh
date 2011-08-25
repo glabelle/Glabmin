@@ -48,9 +48,9 @@ done
 [ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val is disabled"
 [ -z "$opt_password" ] && opt_password_val=`query "select password from domains where name=(select domain from database_domains where domain='$opt_domain_val');"`
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_user_val|egrep '^[a-zA-Z]+([_]?[a-zA-Z0-9]+)$'` ] && error "Invalid user name $opt_user_val"
+[ -z `echo $opt_user_val|egrep $DB_USER_REGEXP` ] && error "Invalid user name $opt_user_val"
 [ "`echo ${#opt_user_val}`" -gt "16"  ] && error "User name $opt_user_val too long"
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "Invalid admin email $opt_email_val"
+[ -z `echo $opt_email_val|egrep $DB_CONTACT_EMAIL_REGEXP` ] && error "Invalid admin email $opt_email_val"
 [ -n "`query "select name from database_users where name='$opt_user_val'"`" ] && error "User $opt_user_val already defined"
 [ -n "`mysql -N -h$DATABASE_HOST -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e"use mysql ; select User from user where User='$opt_user_val';"`" ] && error "User $opt_user_val is system-dedicated"
 [ "`query "select count(*) from database_users where domain='$opt_domain_val';"`" -ge "`query "select nbuser from database_domains where domain='$opt_domain_val';"`" ] && error "cannot add another user for domain $opt_domain_val"

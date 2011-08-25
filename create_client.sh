@@ -41,9 +41,9 @@ done
 [ -z "$opt_email" ] && error "Client email is missing"
 
 #argument vs system ckeckings :
-[ -z `echo $opt_name_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid client name : $opt_name_val"
+[ -z `echo $opt_name_val|egrep $CLIENT_NAME_REGEXP''` ] && error "Invalid client name : $opt_name_val"
 [ -n "`query "select name from clients where name='$opt_name_val';"`" ] && error "Client name already registered"
-[ -z `echo $opt_email_val|egrep '\w+([_-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "Invalid email : $opt_email_val"
+[ -z `echo $opt_email_val|egrep $CLIENT_CONTACT_EMAIL_REGEXP` ] && error "Invalid email : $opt_email_val"
 
 #registering new client
 query "insert into clients (name,address,email) values('$opt_name_val','$opt_address_val','$opt_email_val')" && exit 0

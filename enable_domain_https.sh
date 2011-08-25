@@ -61,10 +61,10 @@ done
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTPS_DEFAULT_ROOT
 [ -z "$opt_logs" ] && opt_logs_val=$HTTPS_DEFAULT_LOGDIR
-[ -z `echo $opt_root_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid https root name $opt_root_val"
-[ -z `echo $opt_logs_val|egrep '^[a-zA-Z0-9]+([_-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid logs directory name $opt_logs_val"
+[ -z `echo $opt_root_val|egrep $HTTPS_ROOT_REGEXP` ] && error "Invalid https root name $opt_root_val"
+[ -z `echo $opt_logs_val|egrep $HTTPS_LOGDIR_REGEXP` ] && error "Invalid logs directory name $opt_logs_val"
 [ -z "$opt_email" ] && opt_email_val=`query "select email from clients where name=(select client from domains where name='$opt_domain_val');"`
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
+[ -z `echo $opt_email_val|egrep $HTTPS_CONTACT_EMAIL_REGEXP` ] && error "admin email $opt_email_val is invalid"
 [ -n "`query "select domain from https_domains where domain='$opt_domain_val';"`" ] && error "Service https for domain $opt_domain_val already present"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in domain $opt_domain_val"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val" ] && error "A file or directory \"$opt_logs_val\" exists in domain $opt_domain_val"

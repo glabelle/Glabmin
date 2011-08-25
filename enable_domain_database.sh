@@ -56,8 +56,8 @@ done
 
 [ -z `echo $opt_nbuser_val|egrep '^[1-9]+[[:digit:]]*$'` ] && error "Invalid maximum user number $opt_nbuser_val"
 [ -z `echo $opt_nbbase_val|egrep '^[1-9]+[[:digit:]]*$'` ] && error "Invalid maximum base number $opt_nbbase_val"
-[ -z `echo $opt_dbroot_val|egrep '^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*$'` ] && error "Invalid $DB_DEFAULT_ROOT root name $opt_dbroot_val"
-[ -z `echo $opt_email_val|egrep '\w+([._-]\w)*@\w+([._-]\w)*\.\w{2,4}'` ] && error "admin email $opt_email_val is invalid"
+[ -z `echo $opt_dbroot_val|egrep $DB_ROOT_REGEXP` ] && error "Invalid $DB_DEFAULT_ROOT root name $opt_dbroot_val"
+[ -z `echo $opt_email_val|egrep $DB_CONTACT_EMAIL_REGEXP` ] && error "admin email $opt_email_val is invalid"
 
 [ -n "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val already present"
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_dbroot_val" ] && error "A file or directory \"$opt_dbroot_val\" exists in domain $opt_domain_val"

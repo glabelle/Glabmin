@@ -39,7 +39,7 @@ done
 [ -n "`query "select name from domains where name='$opt_domain_val' and mounted=0"`" ] && error "Domain $opt_domain_val is unmounted"
 [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended" 
 [ -z "`query "select domain from database_domains where domain='$opt_domain_val';"`" ] && error "Service database for domain $opt_domain_val is disabled"
-[ -z `echo $opt_base_val|egrep '^[a-zA-Z]+([_]?[a-zA-Z0-9]+)$'` ] && error "Invalid base name $opt_base_val"
+[ -z `echo $opt_base_val|egrep $DB_BASE_REGEXP` ] && error "Invalid database name $opt_base_val"
 [ "`echo ${#opt_base_val}`" -gt "16"  ] && error "Base name $opt_base_val too long"
 [ -n "`query "select name from database_bases where name='$opt_base_val'"`" ] && error "Base $opt_base_val already defined"
 [ -n "`mysql -N -h$DATABASE_HOST -u$DATABASE_ADMIN_USER -p$DATABASE_ADMIN_PASS -e"use information_schema ; SELECT SCHEMA_NAME FROM SCHEMATA where SCHEMA_NAME='$opt_base_val';"`" ] && error "Base $opt_base_val is system-dedicated"

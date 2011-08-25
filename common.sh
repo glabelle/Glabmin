@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #methodes utilisées un peu partout dans les scripts ..
+
 source glabmin.conf
 
 
