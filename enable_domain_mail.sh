@@ -85,10 +85,7 @@ mkdir -p $MAIL_SYSTEM_POOL/$opt_domain_val &&
 chown -R $MAIL_DEFAULT_USER:$MAIL_DEFAULT_GROUP $opt_root_val &&
 chown -R $MAIL_DEFAULT_USER:$MAIL_DEFAULT_GROUP $MAIL_SYSTEM_POOL/$opt_domain_val &&
 chmod 755 -R $opt_root_val &&
-touch $opt_root_val/.lock &&
-chmod 000 $opt_root_val/.lock &&
-chown root:root $opt_root_val/.lock &&
-chattr +i $opt_root_val/.lock &&
+placelock $opt_root_val &&
 mount --bind $opt_root_val/ $MAIL_SYSTEM_POOL/$opt_domain_val &&
 
 #on met a niveau les bases postfix ..

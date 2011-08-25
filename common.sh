@@ -5,7 +5,6 @@
 source glabmin.conf
 
 
-
 #place un vérrou dans un dossier passé en paramêtre (p. ex. /home/glabelle )
 #Méthode sure, si le placement echoue, on nettoie et renvoie faux 
 placelock () {

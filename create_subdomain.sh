@@ -59,10 +59,7 @@ useradd -g $opt_domain_val -d $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_v
 echo "$opt_subdomain_val.$opt_domain_val:$opt_password_val"|chpasswd &&
 chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val &&
 chmod 755 $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val &&
-touch $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&
-chmod 000 $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&
-chown root:root $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&
-chattr +i $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock && exit 0
+placelock $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val && exit 0
 
 
 #otherwise, something went wrong.

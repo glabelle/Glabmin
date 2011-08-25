@@ -69,7 +69,7 @@ webalizer )
 	;;
 * )	;;
 esac
-chattr -i $opt_root_val/.lock &&
+removelock $opt_root_val &&
 rm -fr $opt_root_val && exit 0
 
 #otherwise, something went wrong.

@@ -89,10 +89,7 @@ sed "s/\[NAME\]/$opt_subdomain_val.$opt_domain_val/g" tmp2 > $opt_root_val/index
 rm tmp1 tmp2 &&
 chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $opt_root_val &&
 chmod 755 -R $opt_root_val &&
-touch $opt_root_val/.lock &&
-chmod 000 $opt_root_val/.lock &&
-chown root:root $opt_root_val/.lock &&
-chattr +i $opt_root_val/.lock &&
+placelock $opt_root_val &&
 $DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
 #create logsdir
@@ -100,10 +97,7 @@ mkdir $opt_logs_val &&
 chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $opt_logs_val &&
 chmod 755 -R $opt_logs_val &&
 touch $opt_logs_val/.lock &&
-chmod 000 $opt_logs_val/.lock &&
-chown -R $opt_subdomain_val.$opt_domain_val:$opt_domain_val $opt_logs_val &&
-chown root:root $opt_logs_val/.lock &&
-chattr +i $opt_logs_val/.lock &&
+placelock $opt_logs_val
 
 #otherwise, something went wrong.
 error "something unexpected appened"

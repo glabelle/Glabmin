@@ -47,7 +47,7 @@ opt_domain_val=`query "select domain from subdomains where name='$opt_subdomain_
 query "delete from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';" || error "Client integrity at risk; aborting" #provoque une erreur si ce n'est pas possible
 
 #creating appropriate system side
-chattr -i $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/.lock &&
+removelock $DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val &&
 userdel -r "$opt_subdomain_val.$opt_domain_val" && exit 0
 
 #otherwise, something went wrong.

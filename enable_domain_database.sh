@@ -73,10 +73,7 @@ opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_do
 mkdir $opt_dbroot_val &&
 chown -R mysql:mysql $opt_dbroot_val &&
 chmod 755 -R $opt_dbroot_val &&
-touch $opt_dbroot_val/.lock &&
-chmod 000 $opt_dbroot_val/.lock &&
-chown root:root $opt_dbroot_val/.lock &&
-chattr +i $opt_dbroot_val/.lock && exit 0
+placelock $opt_dbroot_val && exit 0
 
 #otherwise, something went wrong.
 error "something unexpected appened"

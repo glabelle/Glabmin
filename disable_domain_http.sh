@@ -47,9 +47,9 @@ opt_logs_val=`query "select logfiledir from http_domains where domain='$opt_doma
 query "delete from http_domains where domain='$opt_domain_val'" || error "Client integrity at risk; aborting"
 
 $DAEMON_HTTP_SERVER reload>/dev/null &&
-chattr -i $opt_root_val/.lock &&
-rm -fr $opt_root_val && 
-chattr -i $opt_logs_val/.lock &&
+removelock $opt_root_val &&
+rm -fr $opt_root_val &&
+removelock $opt_logs_val &&
 rm -fr $opt_logs_val && exit 0
 
 #otherwise, something went wrong.

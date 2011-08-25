@@ -67,7 +67,7 @@ then
 	$DAEMON_IMAP_SERVER stop && $DAEMON_POP3_SERVER stop && opt_reload="1"
 	[ -n "`umount $opt_root_val/`" ] && error "mail pool $opt_root_val cannot be unmounted"
 fi
-chattr -i $opt_root_val/.lock &&
+removelock $opt_root_val &&
 rm -fr $opt_root_val &&
 rm -fr $MAIL_SYSTEM_POOL/$opt_domain_val 
 [ -n "$opt_reload" ] && $DAEMON_IMAP_SERVER start && $DAEMON_POP3_SERVER start

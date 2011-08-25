@@ -46,10 +46,10 @@ opt_dbroot_val=`query "select dbroot from database_domains where domain='$opt_do
 
 
 #fetching info from database :
-query "delete from database_domains where domain='$opt_domain_val'"  error "Client integrity at risk; aborting" #-> sortie sur erreur s'il reste des bases ..
+query "delete from database_domains where domain='$opt_domain_val'" || error "Client integrity at risk; aborting" #-> sortie sur erreur s'il reste des bases ..
 
 #upgrading system level
-chattr -i $opt_dbroot_val/.lock && 
+removelock $opt_dbroot_val && 
 rm -fr $opt_dbroot_val && exit 0 
 
 #otherwise, something went wrong.

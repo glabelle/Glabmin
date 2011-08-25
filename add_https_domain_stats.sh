@@ -69,10 +69,7 @@ opt_logs_val=`query "select logfiledir from https_domains where domain='$opt_dom
 mkdir $opt_root_val &&
 chown -R $opt_domain_val:$opt_domain_val $opt_root_val &&
 chmod 755 -R $opt_root_val &&
-touch $opt_root_val/.lock &&
-chmod 000 $opt_root_val/.lock &&
-chown root:root $opt_root_val/.lock &&
-chattr +i $opt_root_val/.lock &&
+placelock $opt_root_val
 
 #engine congiguration :
 case "$opt_engine_val" in
