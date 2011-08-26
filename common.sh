@@ -16,7 +16,8 @@ placelock () {
 		chattr +i $@/.lock #-> sortie si tout se passe bien
 	) || ( 
 		[ -e "$@/.lock" ] && 		#-> Sorties possibles quand cela se passe mal
-		rm -fr  $@/.lock && false	#-> 
+		rm -fr  $@/.lock
+		false
 	)
 }
 
@@ -28,7 +29,8 @@ removelock () {
 		rm -fr $@/.lock
 	) || (
 		[ -e "$@/.lock" ] &&
-		chattr +i $@/.lock && false
+		chattr +i $@/.lock
+		false
 	)
 }
 
