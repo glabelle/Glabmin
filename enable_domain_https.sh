@@ -13,7 +13,7 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_d
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
  (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTPS_DEFAULT_ROOT)"
  (-l|--logs) logs_dir // repertoire des logs http dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTPS_DEFAULT_LOGDIR)
- (-a|--autoconfig) // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTPS_DEFAULT_AUTOCONFIG)
+ (-a|--autoconfig) value // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTPS_DEFAULT_AUTOCONFIG)
 "
 
 PARAMS=`getopt -o l:,d:,u:,c:,g:,e:,r:,a:,h,v -l logs:,domain:,user:,charset:,group:,email:,root:,autoconfig:,help,version -- "$@"`

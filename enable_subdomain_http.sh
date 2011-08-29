@@ -13,7 +13,7 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_s
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
  (-r|--root) racine_web // racine de l'arborescence http dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTP_DEFAULT_ROOT)
  (-l|--logs) logs_dir // repertoire des logs http dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTP_DEFAULT_LOGDIR)
- (-a|--autoconfig) // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTP_DEFAULT_AUTOCONFIG)
+ (-a|--autoconfig) value // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTP_DEFAULT_AUTOCONFIG)
 "
 
 
