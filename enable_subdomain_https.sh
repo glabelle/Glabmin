@@ -13,9 +13,10 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_s
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
  (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTPS_DEFAULT_ROOT)"
  (-l|--logs) logs_dir // repertoire des logs https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTP_DEFAULT_LOGDIR)
+ (-a|--autoconfig) // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTPS_DEFAULT_AUTOCONFIG)
+"
 
-
-PARAMS=`getopt -o d:,s:,u:,c:,g:,e:,r:,h,v -l domain:,subdomain:,user:,charset:,group:,email:,root:,help,version -- "$@"`
+PARAMS=`getopt -o d:,s:,u:,c:,g:,e:,r:,a:,h,v -l domain:,subdomain:,user:,charset:,group:,email:,root:,autoconfig:,help,version -- "$@"`
 [ $? != 0 ] && exit 1
 eval set -- "$PARAMS"
 
@@ -24,9 +25,9 @@ while true ; do
 	case "$1" in
 	-d|--domain) opt_domain="1"	; shift 1
 		[ -n "$1" ] && opt_domain_val=$1 && shift 1 ;;
-        -s|--subdomain) opt_subdomain="1"	; shift 1
+    -s|--subdomain) opt_subdomain="1"	; shift 1
 		[ -n "$1" ] && opt_subdomain_val=$1 && shift 1 ;;
-        -u|--user) opt_user="1"	; shift 1
+    -u|--user) opt_user="1"	; shift 1
 		[ -n "$1" ] && opt_user_val=$1 && shift 1 ;;
 	-g|--group) opt_group="1"	; shift 1
 		[ -n "$1" ] && opt_group_val=$1 && shift 1 ;;
@@ -38,6 +39,8 @@ while true ; do
 		[ -n "$1" ] && opt_root_val=$1 && shift 1 ;;
 	-l|--logs) opt_logs="1"	; shift 1
 		[ -n "$1" ] && opt_logs_val=$1 && shift 1 ;;
+	-a|--autoconfig) opt_autoconfig="1" ; shift 1  
+		[ -n "$1" ] && opt_autoconfig_val=$1 ; shift 1 ;;
 	-h|--help) opt_help="1"	; shift 1 ;;
 	-v|--version) opt_version="1"; shift 1 ;;
 	--) shift ; break ;;
@@ -59,7 +62,7 @@ done
 [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended" 
 [ -z "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val';"`" ] && error "Subdomain $opt_subdomain_val is unknown for domain $opt_domain_val"
 [ -n "`query "select name from subdomains where name='$opt_subdomain_val' and domain='$opt_domain_val' and suspended=1"`" ] && error "Subdomain $opt_subdomain_val of domain $opt_domain_val is suspended"
-[ -z "$opt_charset" ] && opt_charset_val=$HTTP_DEFAULT_CHARSET
+[ -z "$opt_charset" ] && opt_charset_val=$HTTPS_DEFAULT_CHARSET
 [ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && error "Charset $opt_charset_val is unknown"
 [ -z "$opt_user" ] && opt_user_val="$opt_subdomain_val.$opt_domain_val"
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
@@ -73,7 +76,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val" ] && error "A file or directory \"$opt_root_val\" exists in subdomain $opt_subdomain_val of $opt_domain_val"
 
 #registering new https service
-query "insert into https_subdomains (subdomain,domain,serveruser,servergroup,serveradmin,documentroot,charset) values ('$opt_subdomain_val','$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val','$opt_charset_val');"
+query "insert into https_subdomains (subdomain,domain,serveruser,servergroup,serveradmin,documentroot,charset,use_autoconf) values ('$opt_subdomain_val','$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_subdomain_val/$opt_root_val','$opt_charset_val','$opt_autoconfig_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from https_subdomains where domain='$opt_domain_val' and subdomain='$opt_subdomain_val'"`

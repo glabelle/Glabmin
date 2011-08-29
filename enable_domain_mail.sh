@@ -13,7 +13,8 @@ OPTIONS="(-p|--password) mot_de_passe_admin // (par defaut : mot de passe de l'a
  (-a|--maxalias) number // nombre max de boites de redirection (defaut : $MAIL_DEFAULT_maxalias)
  (-m|--maxmailbox) number // nombre max de boites mail (defaut : $MAIL_DEFAULT_MAXMAILBOX)
  (-i|--mailadmin) login // compte mailadmin <login>@nom_du_domaine (defaut : $MAIL_DEFAULT_MAILADMIN)
- (-t|--trueadminbox) // creer une boite mail pour <login>@nom_du_domaine (sinon : redir <login>@nom_du_domaine -> pool_admin_email)"
+ (-t|--trueadminbox) // creer une boite mail pour <login>@nom_du_domaine (sinon : redir <login>@nom_du_domaine -> pool_admin_email)
+"
 
 PARAMS=`getopt -o d:,p:,e:,r:,a:,m:,i:,t,h,v -l domain:,password:,email:,root:,maxalias:,maxmailbox:,mailadmin:,trueadminbox,help,version -- "$@"`
 [ $? != 0 ] && exit 1

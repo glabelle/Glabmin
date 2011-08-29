@@ -22,7 +22,7 @@ while true ; do
 	case "$1" in
 	-d|--domain) opt_domain="1"	; shift 1
 		[ -n "$1" ] && opt_domain_val=$1 && shift 1 ;;
-        -u|--nbuser) opt_nbuser="1"	; shift 1
+    -u|--nbuser) opt_nbuser="1"	; shift 1
 		[ -n "$1" ] && opt_nbuser_val=$1 && shift 1 ;;
 	-b|--nbbase) opt_nbbase="1"	; shift 1
 		[ -n "$1" ] && opt_nbbase_val=$1 && shift 1 ;;
@@ -78,4 +78,3 @@ placelock $opt_dbroot_val && exit 0
 #otherwise, something went wrong.
 error "something unexpected appened"
 #peut etre effacer içi l'enregistrement en bdd ??
-

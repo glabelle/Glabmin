@@ -13,10 +13,11 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_d
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
  (-r|--root) racine_web // racine de l'arborescence http dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTP_DEFAULT_ROOT)
  (-l|--logs) logs_dir // repertoire des logs http dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTP_DEFAULT_LOGDIR)
+ (-a|--autoconfig) // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTP_DEFAULT_AUTOCONFIG)
  "
 
 
-PARAMS=`getopt -o l:,d:,u:,c:,g:,e:,r:,h,v -l logs:,domain:,user:,charset:,group:,email:,root:,help,version -- "$@"`
+PARAMS=`getopt -o l:,d:,u:,c:,g:,e:,r:,a:,h,v -l logs:,domain:,user:,charset:,group:,email:,root:,autoconfig:,help,version -- "$@"`
 [ $? != 0 ] && exit 1
 eval set -- "$PARAMS"
 
@@ -31,12 +32,14 @@ while true ; do
 		[ -n "$1" ] && opt_group_val=$1 && shift 1 ;;
 	-c|--charset) opt_charset="1"	; shift 1
 		[ -n "$1" ] && opt_charset_val=$1 && shift 1 ;;
-	-e|--email) opt_email="1"	; shift 1
+	-e|--email) opt_email="1" 		; shift 1
 		[ -n "$1" ] && opt_email_val=$1 && shift 1 ;;
 	-r|--root) opt_root="1"	; shift 1
 		[ -n "$1" ] && opt_root_val=$1 && shift 1 ;;
 	-l|--logs) opt_logs="1"	; shift 1
 		[ -n "$1" ] && opt_logs_val=$1 && shift 1 ;;
+	-a|--autoconfig) opt_autoconfig="1" ; shift 1  
+		[ -n "$1" ] && opt_autoconfig_val=$1 ; shift 1 ;;
 	-h|--help) opt_help="1"	; shift 1 ;;
 	-v|--version) opt_version="1"; shift 1 ;;
 	--) shift ; break ;;
@@ -58,7 +61,8 @@ done
 [ -n "`query "select name from domains where name='$opt_domain_val' and suspended=1"`" ] && error "Domain $opt_domain_val is suspended" 
 [ -z "$opt_charset" ] && opt_charset_val=$HTTP_DEFAULT_CHARSET
 [ -z "`query "select name from charsets where name='$opt_charset_val';"`" ] && error "Charset $opt_charset_val is unknown"
-[ -z "$opt_user" ] && opt_user_val=$opt_domain_val
+[ -z "$opt_user" ] && opt_user_val=$opt_domain_val./
+[ -z "$opt_autoconfig" ] && opt_autoconfig_val=$HTTP_DEFAULT_AUTOCONFIG
 [ -z "$opt_group" ] && opt_group_val=$opt_domain_val
 [ -z "$opt_root" ] && opt_root_val=$HTTP_DEFAULT_ROOT
 [ -z "$opt_logs" ] && opt_logs_val=$HTTP_DEFAULT_LOGDIR
@@ -71,7 +75,7 @@ done
 [ -e "$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val" ] && error "A file or directory \"$opt_logs_val\" exists in domain $opt_domain_val"
 
 #registering new http service
-query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val');" || error "Client integrity at risk; aborting"
+query "insert into http_domains (domain,serveruser,servergroup,serveradmin,documentroot,charset,logfiledir,use_autoconf) values ('$opt_domain_val','$opt_user_val','$opt_group_val','$opt_email_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_root_val','$opt_charset_val','$DOMAIN_POOL_ROOT/$opt_domain_val/$opt_logs_val','$opt_autoconfig_val');" || error "Client integrity at risk; aborting"
 
 #verif
 opt_domain_val=`query "select domain from http_domains where domain='$opt_domain_val'"`
