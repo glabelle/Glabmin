@@ -11,7 +11,7 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_s
  (-c|--charset) caractere_set // encodage des pages (defaut : $HTTP_DEFAULT_CHARSET. Les autres valeurs possibles sont définies dans la table glabelle.charsets)
  (-g|--group) apache_groupe // groupe apache (defaut : nom_du_domaine)
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
- (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTPS_DEFAULT_ROOT)"
+ (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTPS_DEFAULT_ROOT)
  (-l|--logs) logs_dir // repertoire des logs https dans $DOMAIN_POOL_ROOT/nom_de_domaine/nom_de_sous_domaine (defaut : $HTTP_DEFAULT_LOGDIR)
  (-a|--autoconfig) value // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTPS_DEFAULT_AUTOCONFIG)
 "

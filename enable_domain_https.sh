@@ -11,7 +11,7 @@ OPTIONS="(-u|--user) apache_utilisateur // utilisateur apache (defaut : nom_du_d
  (-c|--charset) caractere_set // encodage des pages (defaut : $HTTP_DEFAULT_CHARSET. Les autres valeurs possibles sont définies dans la table glabelle.charsets)
  (-g|--group) apache_groupe // groupe apache (defaut : nom_du_domaine)
  (-e|--email) admin_email // email de l'administrateur (defaut : email du client de nom_du_domaine)
- (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTPS_DEFAULT_ROOT)"
+ (-r|--root) racine_web // racine de l'arborescence https dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTPS_DEFAULT_ROOT)
  (-l|--logs) logs_dir // repertoire des logs http dans $DOMAIN_POOL_ROOT/nom_de_domaine (defaut : $HTTPS_DEFAULT_LOGDIR)
  (-a|--autoconfig) value // 0=désactive ou 1=active l'autoconfiguration apache pour ce domaine (default : $HTTPS_DEFAULT_AUTOCONFIG)
 "
@@ -85,7 +85,7 @@ opt_logs_val=`query "select logfiledir from https_domains where domain='$opt_dom
 #upgrading system level
 #create rootdir
 mkdir $opt_root_val &&
-sed 's/\[HOST\]/<a href="http:\/\/glabelle.net">Glabelle.net<\/a>/g' $SCRIPTDIR/template_files/http_index.tmpl > tmp1 &&
+sed 's/\[HOST\]/<a href="http:\/\/glabelle.net">Glabelle.net<\/a>/g' $SCRIPTSDIR/template_files/http_index.tmpl > tmp1 &&
 sed "s/\[SERVERADMIN\]/$opt_email_val/g" tmp1 > tmp2 &&
 sed "s/\[NAME\]/$opt_domain_val/g" tmp2 > $opt_root_val/index.html &&
 rm tmp1 tmp2 &&
