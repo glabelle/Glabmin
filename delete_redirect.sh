@@ -41,7 +41,7 @@ done
 [ -z "$opt_subdomain" ] && [ -z "`query "select * from restricted_vhost_names where link='$opt_redirect_val' and is_https=$opt_encrypted_val;"`" ] && error "link '$opt_redirect_val' with https=$opt_encrypted_val does not exists"
 
 #delete existing redirection
-for i in 'http_domains_redirect' 'https_domains_redirect' 'http_subdomains_redirect' 'https_subdomains_redirect'
+for i in 'http_domains_redirect' 'https_domains_redirect' 'http_subdomains_alias' 'https_subdomains_alias'
 do
 query "delete from $i where link='$opt_redirect_val' and is_https=$opt_encrypted_val" || error "Client integrity at risk; aborting" 
 done

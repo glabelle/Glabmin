@@ -48,7 +48,7 @@ done
 
 #registering new redirection
 [ -z "$opt_subdomain" ] && ( query "insert into http_domains_redirect(link,is_https,target) values ('$opt_redirect_val','$opt_encrypted_val','$opt_domain_val');" || error "Client integrity at risk; aborting" )
-[ -n "$opt_subdomain" ] && ( query "insert into http_subdomains_redirect(link,is_https,target,domain) values ('$opt_redirect_val','$opt_encrypted_val','$opt_subdomain_val','$opt_domain_val');" || error "Client integrity at risk; aborting" )
+[ -n "$opt_subdomain" ] && ( query "insert into http_subdomains_alias(link,is_https,target,domain) values ('$opt_redirect_val','$opt_encrypted_val','$opt_subdomain_val','$opt_domain_val');" || error "Client integrity at risk; aborting" )
 
 $DAEMON_HTTP_SERVER reload>/dev/null && exit 0
 
