@@ -37,13 +37,17 @@ done
 #if no encrypted, using default value
 [ -z "$opt_encrypted" ] && opt_encrypted_val=$REDIRECT_DEFAULT_ENCRYPTED 
 #argument vs system ckeckings :
-[ -z "$opt_subdomain" ] && [ -z "`query "select * from restricted_vhost_names where link='$opt_redirect_val' and is_https=$opt_encrypted_val;"`" ] && error "link '$opt_redirect_val' with https=$opt_encrypted_val does not exists"
-[ -z "$opt_subdomain" ] && [ -z "`query "select * from restricted_vhost_names where link='$opt_redirect_val' and is_https=$opt_encrypted_val;"`" ] && error "link '$opt_redirect_val' with https=$opt_encrypted_val does not exists"
+result=""
+for i in 'http_domains_redirect' 'https_domains_redirect' 'http_subdomains_redirect' 'https_subdomains_redirect'
+do
+  result="$result`query "select * from $i where link='$opt_redirect_val' and is_https=$opt_encrypted_val"`"
+done
+[ -z "$result" ] && error "link '$opt_redirect_val' with https=$opt_encrypted_val does not exists"
 
 #delete existing redirection
 for i in 'http_domains_redirect' 'https_domains_redirect' 'http_subdomains_alias' 'https_subdomains_alias'
 do
-query "delete from $i where link='$opt_redirect_val' and is_https=$opt_encrypted_val" || error "Client integrity at risk; aborting" 
+  query "delete from $i where link='$opt_redirect_val' and is_https=$opt_encrypted_val" || error "Client integrity at risk; aborting" 
 done
 
 $DAEMON_HTTP_SERVER reload>/dev/null && exit 0
