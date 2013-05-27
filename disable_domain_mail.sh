@@ -61,6 +61,18 @@ mailquery "delete from admin where username='$opt_mailadmin_val@$opt_domain_val'
 #deleting domain:
 mailquery "delete from domain where domain='$opt_domain_val';" || error "Cannot delete domain $opt_domain_val from postfix database"
 
+
+#delete amavis entry
+sed -i "/[.]$opt_domain_val/d" $MAIL_AMAVIS_DOMAINS
+$DAEMON_AMAVIS_SERVICE restart
+#send an email asking for DNS update
+res=`amavisd-new showkey $opt_domain_val`
+echo "$res" | mail -s "[A FAIRE] Supprimer du DNS $opt_domain_val" $GLABMIN_ADMIN_MAIL
+#delete DKIM keyzzz
+rm -f /var/lib/amavis/dkim/$opt_domain_val.key.pem
+#delete from config file
+sed -i "/dkim_key('$opt_domain_val', '$opt_domain_val', '\/var\/lib\/amavis\/dkim\/$opt_domain_val\.key\.pem');/d" /etc/amavis/conf.d/60-glabelle
+
 #upgrading system level
 if [ -n "`umount $opt_root_val/`" ] 
 then

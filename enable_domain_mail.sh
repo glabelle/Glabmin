@@ -94,9 +94,22 @@ mount --bind $opt_root_val/ $MAIL_SYSTEM_POOL/$opt_domain_val &&
 php -r "include \"$MAIL_PHP_CRYPT\"; \$pass=pacrypt(\"$opt_password_val\");echo \$pass;" > /tmp/encrypted
 opt_encrypted_val="`cat /tmp/encrypted`"
 rm /tmp/encrypted
+
+
+#ajout du domaine dans le fichier de config amavisd
+echo ".$opt_domain_val">> $MAIL_AMAVIS_DOMAINS
+$DAEMON_AMAVIS_SERVICE restart
+#configuration DKIM
+amavisd-new genrsa /var/lib/amavis/dkim/$opt_domain_val.key.pem
+#certificat pour DKIM
+sed -i "s/#MATHIEUADDHERE/dkim_key('$opt_domain_val', '$opt_domain_val', '\/var\/lib\/amavis\/dkim\/$opt_domain_val\.key\.pem');\n#MATHIEUADDHERE/g" /etc/amavis/conf.d/60-glabelle
+#envoi du certificat public a l'admin glabelle
+res=`amavisd-new showkey $opt_domain_val`
+echo "$res" | mail -s "[A FAIRE] Ajout au DNS $opt_domain_val" $GLABMIN_ADMIN_MAIL
+
 date="`date +%Y-%m-%d\ %H:%M:%S`"
 mailquery "insert into admin(username,password,created,modified) values ('$opt_mailadmin_val@$opt_domain_val','$opt_encrypted_val','$date','$date');" || error "Cannot insert admin $opt_mailadmin_val@$opt_domain_val in postfix database"
-mailquery "insert into domain(domain,description,aliases,mailboxes,created,modified) values ('$opt_domain_val','$MAIL_DEFAULT_DESC $opt_domain_val',$opt_maxalias_val,$opt_maxmailbox_val,'$date','$date');" || error "Cannot insert domain $opt_domain_val in postfix database"
+mailquery "insert into domain(domain,description,aliases,mailboxes,created,modified,transport) values ('$opt_domain_val','$MAIL_DEFAULT_DESC $opt_domain_val',$opt_maxalias_val,$opt_maxmailbox_val,'$date','$date','$MAIL_DEFAULT_TRANSPORT_AGENT');" || error "Cannot insert domain $opt_domain_val in postfix database"
 mailquery "insert into domain_admins(username,domain,created) values ('$opt_mailadmin_val@$opt_domain_val','$opt_domain_val','$date');" || error "Cannot insert admin $opt_mailadmin_val@$opt_domain_val for domain $opt_domain_val in postfix database"
 if [ -n "$opt_trueadminbox" ] 
 then
